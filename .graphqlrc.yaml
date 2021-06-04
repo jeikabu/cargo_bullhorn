@@ -1,0 +1,8 @@
+schema: https://api.hashnode.com/
+documents: src/**/*.graphql
+extensions:
+  endpoints:
+    default:
+      url: https://api.hashnode.com/
+      headers:
+        Authorization: ${HASHNODE_TOKEN}

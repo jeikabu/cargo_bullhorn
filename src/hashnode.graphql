@@ -1,0 +1,26 @@
+query Tags {
+  tagCategories{
+    _id
+    name
+    slug
+  }
+}
+
+mutation CreateStory($input: CreateStoryInput!) {
+	createStory(input: $input) {
+		...createResponseFields
+	}
+}
+
+mutation CreatePubStory($input: CreateStoryInput!, $pubId: String!, $hideFromFeed: Boolean = false) {
+  createPublicationStory(input: $input, publicationId: $pubId, hideFromHashnodeFeed: $hideFromFeed) {
+    ...createResponseFields
+  }
+
+}
+
+fragment createResponseFields on CreatePostOutput {
+  code
+  success
+  message
+}
