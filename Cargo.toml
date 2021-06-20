@@ -1,13 +1,12 @@
 [package]
-name = "cargo-bullhorn"
+name = "cargo_bullhorn"
 version = "0.1.0"
 authors = ["jeikabu <jeikabu@users.noreply.github.com>"]
 edition = "2018"
 categories = ["development-tools::cargo-plugins"]
 license = "MIT"
-repository = "https://github.com/jeikabu/cargo-bullhorn"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+repository = "https://github.com/jeikabu/cargo_bullhorn"
+description = "CLI tool to publish articles and update them."
 
 [features]
 default = ["github_pages", "hashnode", "medium"]
@@ -22,7 +21,7 @@ futures = "0.3"
 git = { package = "git2", version = "0.13", optional = true }
 graphql_client = { version = "0.9", optional = true }
 indicatif = "0.16"
-quick-xml = { version = "0.22", features = ["serialize"], optional = true }
+quick-xml = { version = "0.22", optional = true }
 regex = "1.5"
 reqwest = { version = "0.11", features = ["json"] }
 rss = { version = "1.10", optional = true }

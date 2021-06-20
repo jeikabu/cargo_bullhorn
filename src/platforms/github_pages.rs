@@ -14,13 +14,13 @@ struct FilenameParts {
 	pub name: String,
 }
 
-pub struct GithubPagesPublish<'s> {
-	settings: &'s Settings,
+pub struct GithubPages {
+	settings: Settings,
 	repo: git::Repository,
 }
 
-impl <'s> GithubPagesPublish<'s> {
-	pub fn new(post: &Post, settings: &'s Settings) -> Result<Self> {
+impl GithubPages {
+	pub fn new(post: &Post, settings: Settings) -> Result<Self> {
 		debug!("git: Searching for repository: {:?}", post.path);
 		let mut repo_path = post.path.parent();
 		let (repo, repo_path) = loop {
@@ -43,7 +43,7 @@ impl <'s> GithubPagesPublish<'s> {
 	pub fn publish(&self, post: &mut Post) -> Result<()> {
 		// TODO: move to `_posts/YYYY/`, add and git commit, git push
 
-		let parts = GithubPagesPublish::parse_filename(&post)?;
+		let parts = GithubPages::parse_filename(&post)?;
 
 		if post.front_matter.canonical_url.is_none() {
 			let url = self.get_canonical_url(&post, &parts)?;
@@ -93,5 +93,15 @@ impl <'s> GithubPagesPublish<'s> {
 			day: captures.get(3).unwrap().as_str().parse::<u32>()?,
 			name: captures.get(4).unwrap().as_str().to_owned(),
 		})
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn x() {
+
 	}
 }

@@ -1,6 +1,7 @@
 use crate::{*, post::Post};
 
 type ArticleResponse = serde_json::Map<String, serde_json::Value>;
+const URL: &str = "https://dev.to/api";
 
 #[derive(serde::Serialize)]
 struct Article {
@@ -36,14 +37,15 @@ impl From<Post> for Body {
 	}
 }
 
-pub struct DevtoCrossPublish<'s> {
-	settings: &'s Settings,
+pub struct Devto {
+	settings: Settings,
 	api_token: String,
 	client: reqwest::Client,
 }
 
-impl<'s> DevtoCrossPublish<'s> {
-	pub fn new(api_token: String, settings: &'s Settings) -> Self {
+impl Devto {
+	pub fn new(api_token: String, settings: Settings) -> Self {
+		info!("Cross-posting to devto");
 		let client = reqwest::Client::new();
 		Self {
 			settings,
@@ -71,13 +73,19 @@ impl<'s> DevtoCrossPublish<'s> {
 		}
 	}
 
-	pub async fn publish(&self, post: Post) -> Result<()> {
+	pub async fn try_publish(&self, post: Post) {
+		if let Err(err) = self.publish(post).await {
+			error!("Failed: {}", err);
+		}
+	}
+
+	async fn publish(&self, post: Post) -> Result<()> {
 		let compare_val = match self.settings.compare {
 			Compare::CanonicalUrl => &post.front_matter.canonical_url,
 		};
 		let existing_id = if let Some(compare_val) = compare_val {
-			let me_articles = self.client.get("https://dev.to/api/articles/me")
-				.header("api-key", &self.api_token)
+			let me_articles = self.client.get(format!("{}/articles/me", URL))
+				.auth(self)
 				.send()
 				.await;
 			if let Ok(me_articles) = me_articles {
@@ -92,31 +100,37 @@ impl<'s> DevtoCrossPublish<'s> {
 		};
 
 		if let Some(ref existing_id) = existing_id {
-			info!("devto: Matched existing article id: {} ({:?})", existing_id, compare_val);
+			info!("Matched existing article: id={} ({:?})", existing_id, compare_val);
 		}
 		
 		let body: Body = post.into();
 		if self.settings.dry {
-			self.client.get("https://dev.to/api/articles/me")
+			self.client.get(format!("{}/articles/me", URL))
 				.query(&[("per_page", "1")])
-				.header("api-key", &self.api_token)
+				.auth(self)
 				.send()
 				.await?;
 		} else {
 			if let Some(existing_id) = existing_id {
-				self.client.put(format!("https://dev.to/api/articles/{}", existing_id))
-					.header("api-key", &self.api_token)
+				self.client.put(format!("{}/articles/{}", URL, existing_id))
+					.auth(self)
 					.json(&body)
 					.send()
 					.await?;
 			} else {
 				self.client.post("https://dev.to/api/articles")
-				.header("api-key", &self.api_token)
-				.json(&body)
-				.send()
-				.await?;
+					.auth(self)
+					.json(&body)
+					.send()
+					.await?;
 			}
 		}
 		Ok(())
+	}
+}
+
+impl RequestBuilderExt<Devto> for reqwest::RequestBuilder {
+	fn auth(self, platform: &Devto) -> Self {
+		self.header("api-key", platform.api_token.clone())
 	}
 }

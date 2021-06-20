@@ -20,15 +20,16 @@ pub struct Tags;
 	)]
 pub struct CreatePubStory;
 
-pub struct Hashnode<'s> {
-	settings: &'s Settings,
+pub struct Hashnode {
+	settings: Settings,
 	api_token: String,
 	pub_id: String,
 	client: reqwest::Client,
 }
 
-impl<'s> Hashnode<'s> {
-	pub fn new(api_token: String, pub_id: String, settings: &'s Settings) -> Self {
+impl Hashnode {
+	pub fn new(api_token: String, pub_id: String, settings: Settings) -> Self {
+		info!("Cross-posting to hashnode");
 		let client = reqwest::Client::new();
 		Self {
 			settings,
@@ -67,7 +68,7 @@ impl<'s> Hashnode<'s> {
 				if let Some(tag_match) = categories.iter().find(|category|
 					category.slug == slug || category.name.to_lowercase() == tag
 				) {
-					debug!("hashnode: Matched tag `{}`: {} ({})", tag, tag_match.name, tag_match.id);
+					debug!("Matched tag `{}`: {} ({})", tag, tag_match.name, tag_match.id);
 					tags.push(tag_match.id.clone());
 				}
 			}
@@ -75,7 +76,13 @@ impl<'s> Hashnode<'s> {
 		Ok(tags)
 	}
 
-	pub async fn publish(&self, post: Post) -> Result<()> {
+	pub async fn try_publish(&self, post: Post) {
+		if let Err(err) = self.publish(post).await {
+			error!("Failed: {}", err);
+		}
+	}
+
+	async fn publish(&self, post: Post) -> Result<()> {
 		let is_republished = post.front_matter.canonical_url
 			.as_ref()
 			.and_then(|url| Some(

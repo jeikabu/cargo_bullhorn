@@ -19,7 +19,7 @@ enum PublishStatus {
 
 #[derive(serde::Serialize)]
 #[serde(rename_all = "camelCase")]
-struct MediumPost {
+struct Article {
 	title: String,
 	content_format: ContentFormat,
 	content: String,
@@ -32,7 +32,7 @@ struct MediumPost {
 	notify_followers: Option<bool>,
 }
 
-impl From<Post> for MediumPost {
+impl From<Post> for Article {
 	fn from(item: Post) -> Self {
 		Self {
 			title: item.front_matter.title,
@@ -47,15 +47,16 @@ impl From<Post> for MediumPost {
 	}
 }
 
-pub struct Medium<'s> {
-	settings: &'s Settings,
+pub struct Medium {
+	settings: Settings,
 	api_token: String,
-	pub_id: String,
+	pub_id: Option<String>,
 	client: reqwest::Client,
 }
 
-impl<'s> Medium<'s> {
-	pub fn new(api_token: String, pub_id: String, settings: &'s Settings) -> Self {
+impl Medium {
+	pub fn new(api_token: String, pub_id: Option<String>, settings: Settings) -> Self {
+		info!("Cross-posting to medium");
 		let client = reqwest::Client::new();
 		Self {
 			settings,
@@ -65,10 +66,16 @@ impl<'s> Medium<'s> {
 		}
 	}
 
-	pub async fn publish(&self, post: Post) -> Result<()> {
-		let body: MediumPost = post.into();
+	pub async fn try_publish(&self, post: Post) {
+		if let Err(err) = self.publish(post).await {
+			error!("Failed: {}", err);
+		}
+	}
+
+	async fn publish(&self, post: Post) -> Result<()> {
+		let body: Article = post.into();
 		let resp = self.client.get(format!("{}/me", URL))
-			.header("Authorization", format!("Bearer {}", self.api_token))
+			.auth(self)
 			.send()
 			.await?;
 		let user = resp.json::<UserResponse>().await?.data;
@@ -93,7 +100,7 @@ impl<'s> Medium<'s> {
 			Ok(())
 		} else {
 			let resp = self.client.post(format!("{}/users/{}/posts", URL, user.id))
-				.header("Authorization", format!("Bearer {}", self.api_token))
+				.auth(self)
 				.json(&body)
 				.send()
 				.await?;
@@ -103,23 +110,21 @@ impl<'s> Medium<'s> {
 	}
 }
 
+
+impl RequestBuilderExt<Medium> for reqwest::RequestBuilder {
+	fn auth(self, platform: &Medium) -> Self {
+		self.header("Authorization", format!("Bearer {}", platform.api_token))
+	}
+}
+
 fn get_canonical(text: &str) -> Option<String> {
-	
-	//let story: Html = quick_xml::de::from_str(text).unwrap();
 	let mut reader = quick_xml::Reader::from_str(text);
 	reader.trim_text(true);
 	
-	// if let Some(Workaround::Link(link)) = story.head.links.iter()
-	// 	.find(|link| match link {
-	// 		Workaround::Link(link) => link.rel == "canonical",
-	// 		_ => false,
-	// 	}) {
-	// 	info!("FOUND! {}", link.rel);
-	// }
 	let mut buf = Vec::new();
 	let mut is_head = false;
 	loop {
-		use quick_xml::events::{Event, BytesEnd, BytesStart};
+		use quick_xml::events::Event;
 		match reader.read_event(&mut buf) {
 			Ok(Event::Start(ref e)) if e.name() == b"head" => {
 				is_head = true;
@@ -148,7 +153,7 @@ fn get_canonical(text: &str) -> Option<String> {
 				}
 			},
 			Ok(Event::Eof) => break,
-			Ok(e) => {}, //trace!("Event {:?}", e),
+			Ok(e) => trace!("Event {:?}", e),
 			Err(e) => warn!("Error at position {}: {:?}", reader.buffer_position(), e),
 		}
 		buf.clear();
@@ -169,29 +174,4 @@ struct UserData {
 	name: String,
 	url: String,
 	image_url: String,
-}
-
-#[derive(Debug, serde::Deserialize, PartialEq)]
-struct Html {
-    head: Head,
-}
-
-#[derive(Debug, serde::Deserialize, PartialEq)]
-struct Head {
-    title: String,
-    links: Vec<Workaround>,
-}
-
-#[derive(Debug, serde::Deserialize, PartialEq)]
-#[serde(rename_all = "lowercase")]
-enum Workaround {
-	Link(Link),
-	Script,
-}
-
-#[derive(Debug, serde::Deserialize, PartialEq)]
-struct Link {
-    rel: String,
-    href: String,
-    sizes: Option<String>,
 }
