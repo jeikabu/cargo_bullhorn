@@ -61,7 +61,7 @@ impl GithubPages {
 		Ok(())
 	}
 
-	fn get_canonical_url(&self, post: &Post, parts: &FilenameParts) -> Result<String> {
+	fn get_canonical_url(&self, _post: &Post, parts: &FilenameParts) -> Result<String> {
 		// Obtain server from git remote.  E.g.
 		// `origin	github:repo/repo.github.io.git` -> `repo.github.io`
 		let origin = self.repo.find_remote(&self.settings.remote)?;

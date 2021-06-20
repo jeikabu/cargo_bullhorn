@@ -6,20 +6,37 @@ query Tags {
   }
 }
 
+query PubPosts($username: String!, $page: Int! = 0) {
+  user(username: $username){
+    publication{
+      _id
+      posts(page: $page){
+        _id
+        slug
+      }
+    }
+  }
+}
+
 mutation CreateStory($input: CreateStoryInput!) {
 	createStory(input: $input) {
-		...createResponseFields
+		...storyResponseFields
 	}
 }
 
-mutation CreatePubStory($input: CreateStoryInput!, $pubId: String!, $hideFromFeed: Boolean = false) {
-  createPublicationStory(input: $input, publicationId: $pubId, hideFromHashnodeFeed: $hideFromFeed) {
-    ...createResponseFields
+mutation CreatePubStory($input: CreateStoryInput!, $publicationId: String!, $hideFromFeed: Boolean = false) {
+  createPublicationStory(input: $input, publicationId: $publicationId, hideFromHashnodeFeed: $hideFromFeed) {
+    ...storyResponseFields
   }
-
 }
 
-fragment createResponseFields on CreatePostOutput {
+mutation UpdateStory($postId: String!, $input: UpdateStoryInput!){
+  updateStory(postId: $postId, input: $input){
+    ...storyResponseFields
+  }
+}
+
+fragment storyResponseFields on CreatePostOutput {
   code
   success
   message

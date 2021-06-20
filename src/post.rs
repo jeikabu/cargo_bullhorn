@@ -30,20 +30,20 @@ pub struct Post {
 }
 
 impl FrontMatter {
-    const IsPublished: bool = true;
+    const IS_PUBLISHED: bool = true;
     pub fn new(text: &str) -> Result<Self> {
         let mut fm: FrontMatter = serde_yaml::from_str(text)?;
         if fm.slug.is_none() {
             fm.slug = Some(slug::slugify(&fm.title));
         }
         if fm.published.is_none() {
-            fm.published = Some(Self::IsPublished);
+            fm.published = Some(Self::IS_PUBLISHED);
         }
         Ok(fm)
     }
 
     pub fn is_published(&self) -> bool {
-		self.published.unwrap_or(Self::IsPublished)
+		self.published.unwrap_or(Self::IS_PUBLISHED)
 	}
 }
 
@@ -93,6 +93,9 @@ impl Post {
     pub fn apply(&mut self, settings: &Settings) {
         if settings.draft {
             self.front_matter.published = Some(false);
+        }
+        if let Some(slug) = &settings.slug {
+            self.front_matter.slug = Some(slug.clone());
         }
     }
 }

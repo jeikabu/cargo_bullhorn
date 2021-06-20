@@ -1,7 +1,6 @@
 use anyhow::{anyhow, Result};
 use clap::Clap;
 use tracing::{debug, error, info, trace, warn};
-use tracing_subscriber;
 
 mod platforms;
 mod post;
@@ -71,7 +70,7 @@ async fn start() -> Result<()> {
         git.publish(&mut post)?;
 
         let mut futures: Vec<futures::future::LocalBoxFuture<()>> = vec![];
-        if let Some(api_token) = &opts.devto_api_token {
+        if let (Some(_), Some(api_token)) = (opts.platforms.iter().find(|p| **p == Platforms::Devto), &opts.devto_api_token) {
             let settings = opts.settings.clone();
             let post = post.clone();
             futures.push(Box::pin(async move {
@@ -80,16 +79,16 @@ async fn start() -> Result<()> {
             }));
         }
 
-        if let (Some(api_token), Some(pub_id)) = (&opts.hashnode_api_token, &opts.hashnode_publication_id) {
+        if let (Some(_), Some(api_token), Some(username)) = (opts.platforms.iter().find(|p| **p == Platforms::Hashnode), &opts.hashnode_api_token, &opts.hashnode_username) {
             let settings = opts.settings.clone();
             let post = post.clone();
             futures.push(Box::pin(async move {
-                let hashnode = hashnode::Hashnode::new(api_token.clone(), pub_id.clone(), settings);
+                let hashnode = hashnode::Hashnode::new(api_token.clone(), username.clone(), settings);
                 hashnode.try_publish(post).await
             }));
         }
 
-        if let Some(api_token) = &opts.medium_api_token {
+        if let (Some(_), Some(api_token)) = (opts.platforms.iter().find(|p| **p == Platforms::Medium), &opts.medium_api_token) {
             let settings = opts.settings.clone();
             let pub_id = opts.medium_publication_id.clone();
             let post = post.clone();
@@ -98,7 +97,7 @@ async fn start() -> Result<()> {
                 medium.try_publish(post).await
             }));
         }
-        let results = futures::future::join_all(futures).await;
+        futures::future::join_all(futures).await;
     }
     
     Ok(())

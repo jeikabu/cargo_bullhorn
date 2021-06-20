@@ -172,7 +172,7 @@ fn get_canonical(text: &str) -> Option<String> {
 				}
 			},
 			Ok(Event::Eof) => break,
-			Ok(e) => {},
+			Ok(_e) => {},
 			Err(e) => warn!("Error at position {}: {:?}", reader.buffer_position(), e),
 		}
 		buf.clear();
