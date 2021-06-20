@@ -1,7 +1,7 @@
 use clap::{Clap, crate_version};
 use crate::*;
 
-#[derive(clap::ArgEnum, Clone, Debug)]
+#[derive(clap::ArgEnum, Clone, Debug, PartialEq)]
 pub enum Operation {
     Auto,
     Put,
@@ -14,9 +14,10 @@ impl Default for Operation {
     }
 }
 
-#[derive(clap::ArgEnum, Clone, Debug)]
+#[derive(clap::ArgEnum, Clone, Debug, PartialEq)]
 pub enum Compare {
     CanonicalUrl,
+	Slug,
 }
 
 
@@ -31,6 +32,9 @@ pub struct Settings {
     /// Dry run (e.g. no REST POST/PUT, GraphQL mutation, etc.)
     #[clap(long)]
     pub dry: bool,
+	/// Posts created as drafts, if possible
+    #[clap(long)]
+    pub draft: bool,
     /// Operation to perform (i.e. update, or submit new)
     #[clap(long, arg_enum, default_value = "auto")]
     pub operation: Operation,
@@ -53,7 +57,6 @@ pub struct Settings {
 
 #[derive(Clap, Debug, Default)]
 #[clap(version = crate_version!())]
-//#[clap(setting = AppSettings::ColoredHelp)]
 pub struct Opts {
     #[clap(long, requires = "hashnode-publication-id")]
     pub hashnode_api_token: Option<String>,

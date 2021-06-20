@@ -47,14 +47,14 @@ impl GithubPages {
 
 		if post.front_matter.canonical_url.is_none() {
 			let url = self.get_canonical_url(&post, &parts)?;
-			debug!("git: Setting canonical URL: {} ({:?})", url, post.path);
+			debug!("Setting canonical URL: {} ({:?})", url, post.path);
 			post.front_matter.canonical_url = Some(url);
 		}
 
 		if post.front_matter.date.is_none() {
 			// 2021-05-03 00:00:00 UTC
 			let date = format!("{}-{:02}-{:02}", parts.year, parts.month, parts.day);
-			debug!("git: Setting date: {} ({:?})", date, post.path);
+			debug!("Setting date: {} ({:?})", date, post.path);
 			post.front_matter.date = Some(date);
 		}
 		

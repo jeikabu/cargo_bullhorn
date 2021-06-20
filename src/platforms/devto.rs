@@ -23,9 +23,9 @@ struct Body {
 impl From<Post> for Body {
 	fn from(item: Post) -> Self {
 		let article = Article {
-			title: item.front_matter.title,
+			title: item.front_matter.title.clone(),
 			body_markdown: item.body,
-			published: true,
+			published: item.front_matter.is_published(),
 			canonical_url: item.front_matter.canonical_url,
 			tags: item.front_matter.tags.unwrap_or(vec![]),
 			series: item.front_matter.series,
@@ -57,6 +57,7 @@ impl Devto {
 	fn compare(&self, article: &ArticleResponse, value: &String) -> bool {
 		let resp_field = match self.settings.compare {
 			Compare::CanonicalUrl => "canonical_url",
+			Compare::Slug => panic!(),
 		};
 		match article.get(resp_field) {
 			Some(serde_json::Value::String(resp_url)) => 
@@ -82,6 +83,7 @@ impl Devto {
 	async fn publish(&self, post: Post) -> Result<()> {
 		let compare_val = match self.settings.compare {
 			Compare::CanonicalUrl => &post.front_matter.canonical_url,
+			Compare::Slug => panic!("Not supported"),
 		};
 		let existing_id = if let Some(compare_val) = compare_val {
 			let me_articles = self.client.get(format!("{}/articles/me", URL))

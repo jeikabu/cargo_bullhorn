@@ -83,6 +83,10 @@ impl Hashnode {
 	}
 
 	async fn publish(&self, post: Post) -> Result<()> {
+		if self.settings.compare != Compare::Slug {
+			warn!("Hashnode only supports comparing via Slug ({:?}), ignoring: {:?}", 
+				post.front_matter.slug, self.settings.compare);
+		}
 		let is_republished = post.front_matter.canonical_url
 			.as_ref()
 			.and_then(|url| Some(
@@ -97,7 +101,7 @@ impl Hashnode {
 			cover_image_url: None,
 			is_anonymous: None,
 			is_republished,
-			slug: Some(slug::slugify(&post.front_matter.title)),
+			slug: post.front_matter.slug,
 			sourced_from_github: None,
 			tags,
 			title: post.front_matter.title,
@@ -107,7 +111,6 @@ impl Hashnode {
 			pub_id: self.pub_id.clone(),
 			..Default::default()
 		});
-		debug!("REQ {:?}", serde_json::to_string_pretty(&body));
 
 		if self.settings.dry {
 

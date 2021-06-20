@@ -1,5 +1,5 @@
+use crate::*;
 use serde::{Deserialize, Serialize};
-use anyhow::Result;
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct FrontMatter {
@@ -9,11 +9,17 @@ pub struct FrontMatter {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<String>>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub permalink: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub canonical_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub series: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub date: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub published: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub slug: Option<String>,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -21,6 +27,24 @@ pub struct Post {
     pub front_matter: FrontMatter,
     pub body: String,
     pub path: std::path::PathBuf,
+}
+
+impl FrontMatter {
+    const IsPublished: bool = true;
+    pub fn new(text: &str) -> Result<Self> {
+        let mut fm: FrontMatter = serde_yaml::from_str(text)?;
+        if fm.slug.is_none() {
+            fm.slug = Some(slug::slugify(&fm.title));
+        }
+        if fm.published.is_none() {
+            fm.published = Some(Self::IsPublished);
+        }
+        Ok(fm)
+    }
+
+    pub fn is_published(&self) -> bool {
+		self.published.unwrap_or(Self::IsPublished)
+	}
 }
 
 impl Post {
@@ -34,12 +58,11 @@ impl Post {
         // Split at dashes into: before front-matter (nothing), front-matter, and body
         let mut matches = re.splitn(&text, 3);
         matches.next(); // Skip the split before the first dashes
-        let front_matter = if let Some(fm) = matches.next() {
-            serde_yaml::from_str(fm)?
-        } else {
-            Default::default()
+        let front_matter = {
+            let text = matches.next().ok_or(Error::BadFormat { thing: "no front-matter".to_owned() })?;
+            FrontMatter::new(text)?
         };
-        let body = matches.next().and_then(|s| Some(s.to_owned())).unwrap_or_default();
+        let body = matches.next().and_then(|s| Some(s.to_owned())).ok_or(Error::BadFormat { thing: "no body".to_owned() })?;
         Ok(Post {
             body,
             front_matter,
@@ -65,6 +88,12 @@ impl Post {
         str.push_str("---\n");
         str.push_str(&self.body);
         Ok(str)
+    }
+
+    pub fn apply(&mut self, settings: &Settings) {
+        if settings.draft {
+            self.front_matter.published = Some(false);
+        }
     }
 }
 

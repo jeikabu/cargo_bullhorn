@@ -34,13 +34,18 @@ struct Article {
 
 impl From<Post> for Article {
 	fn from(item: Post) -> Self {
+		let publish_status = Some(if item.front_matter.is_published() {
+			PublishStatus::Public
+		} else {
+			PublishStatus::Draft
+		});
 		Self {
 			title: item.front_matter.title,
 			content_format: ContentFormat::Markdown,
 			content: item.body,
 			tags: item.front_matter.tags,
 			canonical_url: item.front_matter.canonical_url,
-			publish_status: Some(PublishStatus::Public),
+			publish_status,
 			license: None,
 			notify_followers: None,
 		}
@@ -73,32 +78,17 @@ impl Medium {
 	}
 
 	async fn publish(&self, post: Post) -> Result<()> {
-		let body: Article = post.into();
 		let resp = self.client.get(format!("{}/me", URL))
 			.auth(self)
 			.send()
 			.await?;
 		let user = resp.json::<UserResponse>().await?.data;
 		info!("Authenticated: {} ({} {})", user.username, user.name, user.id);
-		let feed = self.client.get(format!("https://medium.com/feed/@{}", user.username))
-			.send()
-			.await?
-			.bytes()
-			.await?;
-		let channel = rss::Channel::read_from(&feed[..])?;
-		for item in channel.items {
-			if let Some(link) = item.link {
-				let story = self.client.get(link)
-					.send().await?
-					.text().await?;
-				if let Some(canonical_url) = get_canonical(&story) {
-					info!("Matched existing article: ({})", canonical_url);
-				}
-			}
-		}
+		self.find_existing(&post, &user).await?;
 		if self.settings.dry {
 			Ok(())
 		} else {
+			let body: Article = post.into();
 			let resp = self.client.post(format!("{}/users/{}/posts", URL, user.id))
 				.auth(self)
 				.json(&body)
@@ -107,6 +97,36 @@ impl Medium {
 			info!("{:?}", resp);
 			Ok(())
 		}
+	}
+
+	async fn find_existing(&self, post: &Post, user: &UserData) -> Result<()> {
+		if self.settings.compare == Compare::CanonicalUrl {
+			if let Some(canonical_url) = &post.front_matter.canonical_url {
+				let feed = self.client.get(format!("https://medium.com/feed/@{}", user.username))
+					.send()
+					.await?
+					.bytes()
+					.await?;
+				let channel = rss::Channel::read_from(&feed[..])?;
+				for item in channel.items {
+					if let Some(link) = item.link {
+						let story = self.client.get(link.clone())
+							.send().await?
+							.text().await?;
+						if let Some(story_canonical_url) = get_canonical(&story) {
+							debug!("Found canonical URL: href={:?} ({})", story_canonical_url, link);
+							if &story_canonical_url == canonical_url {
+								info!("Matched existing article: {}", canonical_url);
+								break;
+							}
+						}
+					}
+				}
+			} else {
+				warn!("No canonical URL");
+			}
+		}
+		Ok(())
 	}
 }
 
@@ -148,12 +168,11 @@ fn get_canonical(text: &str) -> Option<String> {
 					let href = e.attributes().filter_map(|x| x.ok())
 						.find(|attr| attr.key == b"href")
 						.map(|attr| attr.unescape_and_decode_value(&reader));
-					trace!("{:?}", href);
 					return href.unwrap().ok();
 				}
 			},
 			Ok(Event::Eof) => break,
-			Ok(e) => trace!("Event {:?}", e),
+			Ok(e) => {},
 			Err(e) => warn!("Error at position {}: {:?}", reader.buffer_position(), e),
 		}
 		buf.clear();

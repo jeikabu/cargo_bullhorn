@@ -64,6 +64,7 @@ async fn start() -> Result<()> {
             continue;
         }
         let mut post = Post::open(path)?;
+        post.apply(&opts.settings);
 
         // Post "original" represented by canonical URL
         let git = github_pages::GithubPages::new(&post, opts.settings.clone())?;
