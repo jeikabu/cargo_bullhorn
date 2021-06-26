@@ -62,7 +62,7 @@ impl Post {
             let text = matches.next().ok_or(Error::BadFormat { thing: "no front-matter".to_owned() })?;
             FrontMatter::new(text)?
         };
-        let body = matches.next().and_then(|s| Some(s.to_owned())).ok_or(Error::BadFormat { thing: "no body".to_owned() })?;
+        let body = matches.next().map(|s| s.to_owned()).ok_or(Error::BadFormat { thing: "no body".to_owned() })?;
         Ok(Post {
             body,
             front_matter,
@@ -237,7 +237,7 @@ title: title
 ```";
         let post = Post::new(text).unwrap();
         assert_eq!(post.front_matter.title, "title");
-        assert_eq!(post.body.is_empty(), false);
+        assert!(!post.body.is_empty());
     }
 
     #[test]
@@ -251,7 +251,7 @@ title: title
 | |";
         let post = Post::new(text).unwrap();
         assert_eq!(post.front_matter.title, "title");
-        assert_eq!(post.body.is_empty(), false);
+        assert!(!post.body.is_empty());
     }
 
     #[test]
@@ -264,6 +264,6 @@ body
 ";
         let post = Post::new(text).unwrap();
         assert_eq!(post.front_matter.title, "title");
-        assert_eq!(post.body.is_empty(), false);
+        assert!(!post.body.is_empty());
     }
 }

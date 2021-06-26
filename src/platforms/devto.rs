@@ -1,3 +1,5 @@
+#![cfg(feature = "devto")]
+
 use crate::{*, post::Post};
 
 type ArticleResponse = serde_json::Map<String, serde_json::Value>;
@@ -27,7 +29,7 @@ impl From<Post> for Body {
 			body_markdown: item.body,
 			published: item.front_matter.is_published(),
 			canonical_url: item.front_matter.canonical_url,
-			tags: item.front_matter.tags.unwrap_or(vec![]),
+			tags: item.front_matter.tags.unwrap_or_default(),
 			series: item.front_matter.series,
 			date: item.front_matter.date,
 		};

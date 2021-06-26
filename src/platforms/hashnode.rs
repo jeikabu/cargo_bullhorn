@@ -1,3 +1,5 @@
+#![cfg(feature = "hashnode")]
+
 use crate::{*, post::Post};
 use graphql_client::GraphQLQuery;
 
@@ -66,28 +68,46 @@ impl Hashnode {
 				.send()
 				.await?;
 			let categories: Vec<tags::TagsTagCategories> = {
-				// Response is `[Tags]`, but `[Tags!]!`
+				// Response is GraphQL type `[Tags]` (each item and array itself can be null).
+                // But `[Tags!]!` (nothing is null) is simpler in Rust
 				let categories: graphql_client::Response<tags::ResponseData> = resp.json().await?;
 				categories.data
 					.and_then(|d| d.tag_categories)
 					// Turn `Option<Vec<Option<TagsTagCategories>>>` into `Vec<TagsTagCategories>`
 					.unwrap_or_default()
 					.into_iter()
-					// Unwrap Some and remove None
-					.filter_map(|c| c)
+                    .flatten()
 					.collect()
 			};
 
 			for tag in front_matter_tags {
-				// Find handnode tag that matches front-matter tag
+				// Find hashnode tag that matches front-matter tag
 				let slug = slug::slugify(&tag);
-				let tag = tag.to_lowercase();
 				if let Some(tag_match) = categories.iter().find(|category|
-					category.slug == slug || category.name.to_lowercase() == tag
+					category.slug == slug || category.name.to_lowercase() == tag.to_lowercase()
 				) {
 					debug!("Matched tag `{}`: {} ({})", tag, tag_match.name, tag_match.id);
 					tags.push(tag_match.id.clone());
-				}
+				} else {
+                    // Not returned from tag query, try GETing the tag-specific page
+                    // and extracting the ID from that.;
+                    let resp = self.client.get(format!("https://hashnode.com/n/{}", slug))
+                        .send()
+                        .await;
+                    if let Ok(resp) = resp {
+                        if let Ok(text) = resp.text().await {
+                            match parse_tag_html(&text) {
+                                Ok(meta) => {
+                                    debug!("Matched tag `{}`: {} ({})", tag, meta.name, meta.id);
+                                    tags.push(meta.id);
+                                    continue;
+                                },
+                                Err(e) => warn!("Failed to parse tag ({}): {}", slug, e),
+                            }
+                        }
+                     }
+                     trace!("Unable to match tag: {}", tag);
+                }
 			}
 		}
 		Ok(tags)
@@ -135,12 +155,12 @@ impl Hashnode {
                 cover_image_url: None,
                 is_republished,
                 is_part_of_publication,
-                tags: vec![],
+                tags,
                 sourced_from_github: None,
             };
             let body = UpdateStory::build_query(update_story::Variables {
-                input,
                 post_id,
+                input,
             });
             if self.settings.dry {
             } else {
@@ -225,5 +245,104 @@ impl Hashnode {
 				if p.slug == post.front_matter.slug { Some(p.id.clone()) } else { None }
 			}));
 		Ok((pub_id, existing_id))
+    }
+}
+
+fn parse_tag_html(text: &str) -> Result<ExtraData> {
+    let mut reader = quick_xml::Reader::from_str(&text);
+    reader
+        .check_end_names(false)
+        .trim_text(true);
+    let mut buf = Vec::new();
+    let mut in_script = false;
+    loop {
+        use quick_xml::events::Event;
+        match reader.read_event(&mut buf) {
+            Ok(Event::Start(ref e)) if e.name() == b"script" => {
+                trace!("Start {:?}", e);
+                let script = e.attributes()
+                    .filter_map(|attr| attr.ok())
+                    .find(|attr|
+                        attr.key == b"id" 
+                        && attr.unescape_and_decode_value(&reader)
+                            .map_or(false, |val| val == "__NEXT_DATA__")
+                    );
+                if let Some(script) = script {
+                    trace!("Script: {:?}", script);
+                    in_script = true;
+                }
+            },
+            Ok(Event::Text(ref e)) if in_script => {
+                if let Ok(text) = e.unescape_and_decode(&reader) {
+                    let script: Script = serde_json::from_str(&text)
+                        .map_err(|e| Error::BadString {
+                            expected: e.to_string(),
+                            found: text,
+                        })?;
+                    let tag_meta = script.props.page_props.extra_data;
+                    trace!("Found tag {}: id={}", 
+                        tag_meta.name,
+                        tag_meta.id);
+                    return Ok(tag_meta);
+                }
+            },
+            Ok(Event::End(ref e)) if in_script && e.name() == b"script" => {
+                in_script = false;
+            },
+            Ok(Event::Eof) => break,
+            Err(e) => warn!("Error at position {}: {:?}", reader.buffer_position(), e),
+            _ => {},
+        }
+        buf.clear();
+    }
+    Err(Error::NotFound{ expected: "".to_owned()}.into())
+}
+
+#[derive(serde::Deserialize)]
+struct Script {
+    props: Props,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct Props {
+    page_props: PageProps,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct PageProps {
+    status_code: i32,
+    extra_data: ExtraData,
+}
+
+#[derive(serde::Deserialize)]
+struct ExtraData {
+    #[serde(rename = "_id")]
+    id: String,
+    name: String,
+    slug: String,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_tag() -> Result<()> {
+        use std::io::prelude::*;
+        tracing_subscriber::fmt()
+            .with_max_level(tracing::Level::TRACE)
+            .with_test_writer()
+            .init();
+
+        let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("tests").join("hashnode_tag.html");
+        let mut buffer = String::new();
+        let _size = std::fs::File::open(path)?
+            .read_to_string(&mut buffer)?;
+        let info = parse_tag_html(&buffer)?;
+        assert_eq!(info.name, "dotnet");
+        Ok(())
     }
 }

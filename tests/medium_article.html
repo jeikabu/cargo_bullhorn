@@ -1,0 +1,3256 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<script defer src="https://cdn.optimizely.com/js/16180790160.js"></script>
+	<title data-rh="true">Native Code in .NET 5.0 and C# 9.0 | by Jeikabu | Jun, 2021 | Medium</title>
+	<meta data-rh="true" charset="utf-8" />
+	<meta data-rh="true" name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1" />
+	<meta data-rh="true" name="theme-color" content="#000000" />
+	<meta data-rh="true" name="twitter:app:name:iphone" content="Medium" />
+	<meta data-rh="true" name="twitter:app:id:iphone" content="828256236" />
+	<meta data-rh="true" property="al:ios:app_name" content="Medium" />
+	<meta data-rh="true" property="al:ios:app_store_id" content="828256236" />
+	<meta data-rh="true" property="al:android:package" content="com.medium.reader" />
+	<meta data-rh="true" property="fb:app_id" content="542599432471018" />
+	<meta data-rh="true" property="og:site_name" content="Medium" />
+	<meta data-rh="true" property="og:type" content="article" />
+	<meta data-rh="true" property="article:published_time" content="2021-06-18T13:27:34.377Z" />
+	<meta data-rh="true" name="title" content="Native Code in .NET 5.0 and C# 9.0 | by Jeikabu | Jun, 2021 | Medium" />
+	<meta data-rh="true" property="og:title" content="Native Code in .NET 5.0 and C# 9.0" />
+	<meta data-rh="true" property="twitter:title" content="Native Code in .NET 5.0 and C# 9.0" />
+	<meta data-rh="true" name="twitter:site" content="@Medium" />
+	<meta data-rh="true" name="twitter:app:url:iphone" content="medium://p/b44d683f5824" />
+	<meta data-rh="true" property="al:android:url" content="medium://p/b44d683f5824" />
+	<meta data-rh="true" property="al:ios:url" content="medium://p/b44d683f5824" />
+	<meta data-rh="true" property="al:android:app_name" content="Medium" />
+	<meta data-rh="true" name="description"
+		content="A while back we covered working with native assemblies. It’s worth re-reading to familiarize yourself with the problem and prior solutions. There’s been a few new options introduced in .NET Core and…" />
+	<meta data-rh="true" property="og:description"
+		content="A while back we covered working with native assemblies. It’s worth re-reading to familiarize yourself with the problem and prior solutions. There’s been a few new options introduced in .NET Core and…" />
+	<meta data-rh="true" property="twitter:description"
+		content="A while back we covered working with native assemblies. It’s worth re-reading to familiarize yourself with the problem and prior solutions. There’s been a few new options introduced in .NET Core and…" />
+	<meta data-rh="true" property="og:url"
+		content="https://medium.com/@jeikabu/native-code-in-net-5-0-and-c-9-0-b44d683f5824" />
+	<meta data-rh="true" property="al:web:url"
+		content="https://medium.com/@jeikabu/native-code-in-net-5-0-and-c-9-0-b44d683f5824" />
+	<meta data-rh="true" name="twitter:card" content="summary" />
+	<meta data-rh="true" property="article:author" content="https://medium.com/@jeikabu" />
+	<meta data-rh="true" name="author" content="Jeikabu" />
+	<meta data-rh="true" name="robots" content="noindex,follow,max-image-preview:large" />
+	<meta data-rh="true" name="referrer" content="unsafe-url" />
+	<meta data-rh="true" name="twitter:label1" content="Reading time" />
+	<meta data-rh="true" name="twitter:data1" content="4 min read" />
+	<link data-rh="true" rel="search" type="application/opensearchdescription+xml" title="Medium" href="/osd.xml" />
+	<link data-rh="true" rel="apple-touch-icon" sizes="152x152"
+		href="https://miro.medium.com/fit/c/152/152/1*sHhtYhaCe2Uc3IU0IgKwIQ.png" />
+	<link data-rh="true" rel="apple-touch-icon" sizes="120x120"
+		href="https://miro.medium.com/fit/c/120/120/1*sHhtYhaCe2Uc3IU0IgKwIQ.png" />
+	<link data-rh="true" rel="apple-touch-icon" sizes="76x76"
+		href="https://miro.medium.com/fit/c/76/76/1*sHhtYhaCe2Uc3IU0IgKwIQ.png" />
+	<link data-rh="true" rel="apple-touch-icon" sizes="60x60"
+		href="https://miro.medium.com/fit/c/60/60/1*sHhtYhaCe2Uc3IU0IgKwIQ.png" />
+	<link data-rh="true" rel="mask-icon" href="https://cdn-static-1.medium.com/_/fp/icons/Medium-Avatar-500x500.svg"
+		color="#171717" />
+	<link data-rh="true" rel="preconnect" href="https://glyph.medium.com" crossOrigin="" />
+	<link data-rh="true" rel="preconnect" href="https://logx.optimizely.com" />
+	<link data-rh="true" id="glyph_preload_link" rel="preload" as="style" type="text/css"
+		href="https://glyph.medium.com/css/unbound.css" />
+	<link data-rh="true" id="glyph_link" rel="stylesheet" type="text/css"
+		href="https://glyph.medium.com/css/unbound.css" />
+	<link data-rh="true" rel="author" href="https://medium.com/@jeikabu" />
+	<link data-rh="true" rel="canonical" href="https://rendered-obsolete.github.io/2021/05/03/dotnet_calli.html" />
+	<link data-rh="true" rel="alternate" href="android-app://com.medium.reader/https/medium.com/p/b44d683f5824" />
+	<script data-rh="true"
+		type="application/ld+json">{"@context":"http:\u002F\u002Fschema.org","@type":"NewsArticle","image":{"@type":"ImageObject","url":"https:\u002F\u002Fmiro.medium.com\u002Fproxy\u002F1*kFrc4tBFM_tCis-2Ic87WA.png","height":810,"width":1440},"url":"https:\u002F\u002Fmedium.com\u002F@jeikabu\u002Fnative-code-in-net-5-0-and-c-9-0-b44d683f5824","dateCreated":"2021-06-18T13:27:34.377Z","datePublished":"2021-06-18T13:27:34.377Z","dateModified":"2021-06-18T13:27:37.043Z","headline":"Native Code in .NET 5.0 and C# 9.0 - Jeikabu - Medium","name":"Native Code in .NET 5.0 and C# 9.0 - Jeikabu - Medium","description":"A while back we covered working with native assemblies. It’s worth re-reading to familiarize yourself with the problem and prior solutions. There’s been a few new options introduced in .NET Core and…","identifier":"b44d683f5824","author":{"@type":"Person","name":"Jeikabu","url":"https:\u002F\u002Fmedium.com\u002F@jeikabu"},"creator":["Jeikabu"],"publisher":{"@type":"Organization","name":"Medium","url":"https:\u002F\u002Fmedium.com\u002F","logo":{"@type":"ImageObject","width":308,"height":60,"url":"https:\u002F\u002Fmiro.medium.com\u002Fmax\u002F616\u002F1*OMF3fSqH8t4xBJ9-6oZDZw.png"}},"mainEntityOfPage":"https:\u002F\u002Fmedium.com\u002F@jeikabu\u002Fnative-code-in-net-5-0-and-c-9-0-b44d683f5824"}</script>
+	<link rel="preload" href="https://cdn.optimizely.com/js/16180790160.js" as="script">
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="STATIC">
+		html {
+			box-sizing: border-box
+		}
+
+		*,
+		*:before,
+		*:after {
+			box-sizing: inherit
+		}
+
+		body {
+			margin: 0;
+			padding: 0;
+			text-rendering: optimizeLegibility;
+			-webkit-font-smoothing: antialiased;
+			color: rgba(0, 0, 0, 0.8);
+			position: relative;
+			min-height: 100vh
+		}
+
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6,
+		dl,
+		dd,
+		ol,
+		ul,
+		menu,
+		figure,
+		blockquote,
+		p,
+		pre,
+		form {
+			margin: 0
+		}
+
+		menu,
+		ol,
+		ul {
+			padding: 0;
+			list-style: none;
+			list-style-image: none
+		}
+
+		main {
+			display: block
+		}
+
+		a {
+			color: inherit;
+			text-decoration: none
+		}
+
+		a,
+		button,
+		input {
+			-webkit-tap-highlight-color: transparent
+		}
+
+		img,
+		svg {
+			vertical-align: middle
+		}
+
+		button {
+			background: transparent;
+			overflow: visible
+		}
+
+		button,
+		input,
+		optgroup,
+		select,
+		textarea {
+			margin: 0
+		}
+
+		:root {
+			--reach-tabs: 1;
+			--reach-menu-button: 1
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="KEYFRAME">
+		@-webkit-keyframes k1 {
+			0% {
+				opacity: 0;
+				transform: translateY(-60px)
+			}
+
+			100% {
+				opacity: 1;
+				transform: translateY(0px)
+			}
+		}
+
+		@-moz-keyframes k1 {
+			0% {
+				opacity: 0;
+				transform: translateY(-60px)
+			}
+
+			100% {
+				opacity: 1;
+				transform: translateY(0px)
+			}
+		}
+
+		@keyframes k1 {
+			0% {
+				opacity: 0;
+				transform: translateY(-60px)
+			}
+
+			100% {
+				opacity: 1;
+				transform: translateY(0px)
+			}
+		}
+
+		@-webkit-keyframes k2 {
+			0% {
+				opacity: 1;
+				transform: translateY(0px)
+			}
+
+			100% {
+				opacity: 0;
+				transform: translateY(-60px)
+			}
+		}
+
+		@-moz-keyframes k2 {
+			0% {
+				opacity: 1;
+				transform: translateY(0px)
+			}
+
+			100% {
+				opacity: 0;
+				transform: translateY(-60px)
+			}
+		}
+
+		@keyframes k2 {
+			0% {
+				opacity: 1;
+				transform: translateY(0px)
+			}
+
+			100% {
+				opacity: 0;
+				transform: translateY(-60px)
+			}
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE">
+		.a {
+			font-family: medium-content-sans-serif-font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif
+		}
+
+		.b {
+			font-weight: 400
+		}
+
+		.c {
+			background-color: rgba(255, 255, 255, 1)
+		}
+
+		.l {
+			height: 100vh
+		}
+
+		.m {
+			width: 100vw
+		}
+
+		.n {
+			display: flex
+		}
+
+		.o {
+			align-items: center
+		}
+
+		.p {
+			justify-content: center
+		}
+
+		.q {
+			height: 25px
+		}
+
+		.r {
+			fill: rgba(41, 41, 41, 1)
+		}
+
+		.s {
+			display: block
+		}
+
+		.t {
+			margin-bottom: 36px
+		}
+
+		.v {
+			padding-top: 8px
+		}
+
+		.w {
+			width: 100%
+		}
+
+		.ab {
+			flex: 0 0 auto
+		}
+
+		.ac {
+			justify-self: flex-end
+		}
+
+		.ae {
+			z-index: 500
+		}
+
+		.af {
+			visibility: hidden
+		}
+
+		.ag {
+			box-shadow: inset 0 -1px 0 rgba(230, 230, 230, 1)
+		}
+
+		.ah {
+			min-height: 115px
+		}
+
+		.ak {
+			flex-direction: column
+		}
+
+		.al {
+			display: none
+		}
+
+		.an {
+			border-bottom: 1px solid rgba(230, 230, 230, 1)
+		}
+
+		.ao {
+			position: relative
+		}
+
+		.au {
+			max-width: 1192px
+		}
+
+		.av {
+			min-width: 0
+		}
+
+		.aw {
+			height: 62px
+		}
+
+		.ax {
+			flex-direction: row
+		}
+
+		.ay {
+			flex: 1 0 auto
+		}
+
+		.az {
+			margin-right: 16px
+		}
+
+		.ba {
+			font-family: sohne, "Helvetica Neue", Helvetica, Arial, sans-serif
+		}
+
+		.bb {
+			font-size: 14px
+		}
+
+		.bc {
+			line-height: 20px
+		}
+
+		.bd {
+			color: rgba(26, 137, 23, 1)
+		}
+
+		.be {
+			padding: 7px 16px 9px
+		}
+
+		.bf {
+			background: 0
+		}
+
+		.bg {
+			fill: rgba(26, 137, 23, 1)
+		}
+
+		.bh {
+			border-color: rgba(26, 137, 23, 1)
+		}
+
+		.bm:disabled {
+			cursor: inherit
+		}
+
+		.bn:disabled {
+			opacity: 0.3
+		}
+
+		.bo:disabled:hover {
+			color: rgba(26, 137, 23, 1)
+		}
+
+		.bp:disabled:hover {
+			fill: rgba(26, 137, 23, 1)
+		}
+
+		.bq:disabled:hover {
+			border-color: rgba(26, 137, 23, 1)
+		}
+
+		.br {
+			border-radius: 99em
+		}
+
+		.bs {
+			border-width: 1px
+		}
+
+		.bt {
+			border-style: solid
+		}
+
+		.bu {
+			box-sizing: border-box
+		}
+
+		.bv {
+			display: inline-block
+		}
+
+		.bw {
+			text-decoration: none
+		}
+
+		.bx {
+			margin-left: 0px
+		}
+
+		.by {
+			color: rgba(117, 117, 117, 1)
+		}
+
+		.bz {
+			font-size: inherit
+		}
+
+		.ca {
+			border: inherit
+		}
+
+		.cb {
+			font-family: inherit
+		}
+
+		.cc {
+			letter-spacing: inherit
+		}
+
+		.cd {
+			font-weight: inherit
+		}
+
+		.ce {
+			padding: 0
+		}
+
+		.cf {
+			margin: 0
+		}
+
+		.cg:disabled {
+			cursor: default
+		}
+
+		.ch:disabled {
+			color: rgba(163, 208, 162, 0.5)
+		}
+
+		.ci:disabled {
+			fill: rgba(163, 208, 162, 0.5)
+		}
+
+		.cj {
+			justify-content: space-between
+		}
+
+		.cp {
+			align-items: flex-start
+		}
+
+		.cq {
+			margin-bottom: 0px
+		}
+
+		.cr {
+			margin-top: -32px
+		}
+
+		.cs {
+			align-items: flex-end
+		}
+
+		.ct {
+			flex-wrap: wrap
+		}
+
+		.cw {
+			margin-top: 32px
+		}
+
+		.cx {
+			margin-right: 24px
+		}
+
+		.cz {
+			font-weight: 700
+		}
+
+		.da {
+			font-size: 27px
+		}
+
+		.db {
+			line-height: 34px
+		}
+
+		.dc:before {
+			margin-bottom: -14px
+		}
+
+		.dd:before {
+			content: ""
+		}
+
+		.de:before {
+			display: table
+		}
+
+		.df:before {
+			border-collapse: collapse
+		}
+
+		.dg:after {
+			margin-top: -6px
+		}
+
+		.dh:after {
+			content: ""
+		}
+
+		.di:after {
+			display: table
+		}
+
+		.dj:after {
+			border-collapse: collapse
+		}
+
+		.dk {
+			letter-spacing: 0
+		}
+
+		.dl {
+			color: rgba(25, 25, 25, 1)
+		}
+
+		.dm {
+			word-break: break-word
+		}
+
+		.dn {
+			font-size: 16px
+		}
+
+		.do {
+			line-height: 24px
+		}
+
+		.dp:before {
+			margin-bottom: -10px
+		}
+
+		.dq {
+			margin-left: 12px
+		}
+
+		.dr {
+			color: inherit
+		}
+
+		.ds {
+			fill: inherit
+		}
+
+		.dv:disabled {
+			color: rgba(117, 117, 117, 1)
+		}
+
+		.dw:disabled {
+			fill: rgba(117, 117, 117, 1)
+		}
+
+		.dx {
+			margin-bottom: -3px
+		}
+
+		.dy {
+			margin-left: 14px
+		}
+
+		.dz {
+			margin-top: -3px
+		}
+
+		.ea {
+			padding-top: 1px
+		}
+
+		.eb {
+			height: 70px
+		}
+
+		.ee {
+			border-top: none
+		}
+
+		.ef {
+			border-bottom: none
+		}
+
+		.eg {
+			left: 0
+		}
+
+		.eh {
+			opacity: 0
+		}
+
+		.ei {
+			position: fixed
+		}
+
+		.ej {
+			right: 0
+		}
+
+		.ek {
+			top: 0
+		}
+
+		.em {
+			height: 60px
+		}
+
+		.ep {
+			margin-left: 16px
+		}
+
+		.eq {
+			padding-left: 24px
+		}
+
+		.er {
+			padding-right: 24px
+		}
+
+		.es {
+			margin-left: auto
+		}
+
+		.et {
+			margin-right: auto
+		}
+
+		.eu {
+			max-width: 728px
+		}
+
+		.ev {
+			background: rgba(255, 255, 255, 1)
+		}
+
+		.ew {
+			border: 1px solid rgba(230, 230, 230, 1)
+		}
+
+		.ex {
+			border-radius: 4px
+		}
+
+		.ey {
+			box-shadow: 0 1px 4px rgba(230, 230, 230, 1)
+		}
+
+		.ez {
+			max-height: 100vh
+		}
+
+		.fa {
+			overflow-y: auto
+		}
+
+		.fb {
+			position: absolute
+		}
+
+		.fc {
+			top: calc(100vh + 100px)
+		}
+
+		.fd {
+			bottom: calc(100vh + 100px)
+		}
+
+		.fe {
+			width: 10px
+		}
+
+		.ff {
+			pointer-events: none
+		}
+
+		.fg {
+			max-width: 680px
+		}
+
+		.fk {
+			border-radius: 50%
+		}
+
+		.fl {
+			height: 28px
+		}
+
+		.fm {
+			width: 28px
+		}
+
+		.fn {
+			color: rgba(41, 41, 41, 1)
+		}
+
+		.fo {
+			margin: 0 4px
+		}
+
+		.fp {
+			margin: 0 7px
+		}
+
+		.fy {
+			padding-right: 8px
+		}
+
+		.fz {
+			margin-right: 8px
+		}
+
+		.ga {
+			word-wrap: break-word
+		}
+
+		.gb:after {
+			display: block
+		}
+
+		.gc:after {
+			clear: both
+		}
+
+		.gd {
+			line-height: 1.58
+		}
+
+		.ge {
+			letter-spacing: -0.004em
+		}
+
+		.gf {
+			font-style: normal
+		}
+
+		.gg {
+			font-family: charter, Georgia, Cambria, "Times New Roman", Times, serif
+		}
+
+		.gw {
+			margin-top: 24px
+		}
+
+		.gx {
+			margin-bottom: -0.46em
+		}
+
+		.gy {
+			text-decoration: underline
+		}
+
+		.gz {
+			line-height: 1.18
+		}
+
+		.ha {
+			letter-spacing: -0.022em
+		}
+
+		.hb {
+			font-weight: 500
+		}
+
+		.hw {
+			margin-bottom: -0.31em
+		}
+
+		.ic {
+			background-color: rgba(242, 242, 242, 1)
+		}
+
+		.id {
+			padding: 2px 4px
+		}
+
+		.ie {
+			font-size: 75%
+		}
+
+		.if>strong {
+			font-family: inherit
+		}
+
+		.ig {
+			font-family: Menlo, Monaco, "Courier New", Courier, monospace
+		}
+
+		.im {
+			padding: 20px
+		}
+
+		.in {
+			background: rgba(242, 242, 242, 1)
+		}
+
+		.io {
+			overflow-x: auto
+		}
+
+		.ip {
+			margin-top: -0.09em
+		}
+
+		.iq {
+			margin-bottom: -0.09em
+		}
+
+		.ir {
+			white-space: pre-wrap
+		}
+
+		.ix {
+			font-style: italic
+		}
+
+		.iy {
+			list-style-type: disc
+		}
+
+		.iz {
+			margin-left: 30px
+		}
+
+		.ja {
+			padding-left: 0px
+		}
+
+		.jg {
+			will-change: opacity
+		}
+
+		.jh {
+			width: 188px
+		}
+
+		.ji {
+			left: 50%
+		}
+
+		.jj {
+			transform: translateX(406px)
+		}
+
+		.jk {
+			top: calc(65px + 54px + 14px)
+		}
+
+		.jn {
+			will-change: opacity, transform
+		}
+
+		.jo {
+			transform: translateY(159px)
+		}
+
+		.jq {
+			width: 197px
+		}
+
+		.jr {
+			margin-bottom: 32px
+		}
+
+		.js {
+			padding-bottom: 5px
+		}
+
+		.jt {
+			padding-top: 14px
+		}
+
+		.ju {
+			color: rgba(255, 255, 255, 1)
+		}
+
+		.jv {
+			fill: rgba(255, 255, 255, 1)
+		}
+
+		.jw {
+			background: rgba(26, 137, 23, 1)
+		}
+
+		.jy:disabled:hover {
+			background: rgba(26, 137, 23, 1)
+		}
+
+		.jz {
+			font-size: 13px
+		}
+
+		.ka {
+			overflow: hidden
+		}
+
+		.kb {
+			max-height: 20px
+		}
+
+		.kc {
+			text-overflow: ellipsis
+		}
+
+		.kd {
+			display: -webkit-box
+		}
+
+		.ke {
+			-webkit-line-clamp: 1
+		}
+
+		.kf {
+			-webkit-box-orient: vertical
+		}
+
+		.kh {
+			word-break: break-all
+		}
+
+		.ki {
+			padding-top: 32px
+		}
+
+		.kj {
+			border-top: 1px solid rgba(230, 230, 230, 1)
+		}
+
+		.kk {
+			justify-content: flex-start
+		}
+
+		.kl {
+			margin-right: 20px
+		}
+
+		.kr {
+			outline: 0
+		}
+
+		.ks {
+			border: 0
+		}
+
+		.kt {
+			user-select: none
+		}
+
+		.ku {
+			cursor: pointer
+		}
+
+		.kv>svg {
+			pointer-events: none
+		}
+
+		.kx {
+			-webkit-user-select: none
+		}
+
+		.la {
+			margin-top: 2px
+		}
+
+		.lb {
+			fill: rgba(61, 61, 61, 1)
+		}
+
+		.lc {
+			opacity: 1
+		}
+
+		.ld {
+			margin-top: 1px
+		}
+
+		.le {
+			margin-top: 40px
+		}
+
+		.lf {
+			clear: both
+		}
+
+		.lg {
+			padding-bottom: 25px
+		}
+
+		.lh {
+			margin-top: 25px
+		}
+
+		.li {
+			max-width: 155px
+		}
+
+		.lt {
+			margin-top: 4px
+		}
+
+		.lu {
+			padding-bottom: 40px
+		}
+
+		.lv {
+			list-style-type: none
+		}
+
+		.lw {
+			margin-bottom: 8px
+		}
+
+		.lx {
+			line-height: 22px
+		}
+
+		.ly {
+			border-radius: 3px
+		}
+
+		.lz {
+			padding: 5px 10px
+		}
+
+		.ma {
+			padding-top: 40px
+		}
+
+		.mb {
+			padding-bottom: 4px
+		}
+
+		.mc {
+			background-color: rgba(250, 250, 250, 1)
+		}
+
+		.ms {
+			padding-top: 25px
+		}
+
+		.my {
+			max-width: 100%
+		}
+
+		.mz {
+			margin-bottom: 40px
+		}
+
+		.na {
+			padding-bottom: 16px
+		}
+
+		.nb {
+			margin-bottom: 24px
+		}
+
+		.on {
+			flex-grow: 0
+		}
+
+		.oo {
+			padding-bottom: 24px
+		}
+
+		.op {
+			max-width: 500px
+		}
+
+		.oq {
+			height: 100%
+		}
+
+		.or {
+			flex: 0 1 auto
+		}
+
+		.ov {
+			padding-bottom: 8px
+		}
+
+		.pg {
+			transition: opacity 100ms 400ms
+		}
+
+		.ph {
+			will-change: transform
+		}
+
+		.pi {
+			transform: translateZ(0)
+		}
+
+		.pj {
+			margin: auto
+		}
+
+		.pk {
+			padding-bottom: 100%
+		}
+
+		.pl {
+			height: 0
+		}
+
+		.pm {
+			filter: blur(20px)
+		}
+
+		.pn {
+			transform: scale(1.1)
+		}
+
+		.po {
+			visibility: visible
+		}
+
+		.pz {
+			padding: 32px 0
+		}
+
+		.qa {
+			background-color: rgba(0, 0, 0, 0.9)
+		}
+
+		.qe:disabled {
+			color: rgba(255, 255, 255, 0.7)
+		}
+
+		.qf:disabled {
+			fill: rgba(255, 255, 255, 0.7)
+		}
+
+		.qg {
+			height: 22px
+		}
+
+		.qh {
+			width: 200px
+		}
+
+		.qj {
+			color: rgba(255, 255, 255, 0.98)
+		}
+
+		.qm {
+			color: rgba(255, 255, 255, 0.7)
+		}
+
+		.bi:hover {
+			color: rgba(15, 115, 12, 1)
+		}
+
+		.bj:hover {
+			fill: rgba(15, 115, 12, 1)
+		}
+
+		.bk:hover {
+			border-color: rgba(15, 115, 12, 1)
+		}
+
+		.bl:hover {
+			cursor: pointer
+		}
+
+		.dt:hover {
+			color: rgba(25, 25, 25, 1)
+		}
+
+		.du:hover {
+			fill: rgba(25, 25, 25, 1)
+		}
+
+		.jx:hover {
+			background: rgba(15, 115, 12, 1)
+		}
+
+		.kz:hover {
+			fill: rgba(117, 117, 117, 1)
+		}
+
+		.pd:hover {
+			text-decoration: underline
+		}
+
+		.qc:hover {
+			color: rgba(255, 255, 255, 0.99)
+		}
+
+		.qd:hover {
+			fill: rgba(255, 255, 255, 0.99)
+		}
+
+		.ky:focus {
+			fill: rgba(117, 117, 117, 1)
+		}
+
+		.kw:active {
+			border-style: none
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE" media="all and (min-width: 1080px)">
+		.d {
+			display: none
+		}
+
+		.x {
+			display: flex
+		}
+
+		.at {
+			margin: 0 64px
+		}
+
+		.fw {
+			margin-left: 30px
+		}
+
+		.gt {
+			font-size: 21px
+		}
+
+		.gu {
+			line-height: 32px
+		}
+
+		.gv {
+			letter-spacing: -0.003em
+		}
+
+		.hs {
+			font-size: 22px
+		}
+
+		.ht {
+			margin-top: 1.72em
+		}
+
+		.hu {
+			line-height: 28px
+		}
+
+		.hv {
+			letter-spacing: 0
+		}
+
+		.ib {
+			margin-top: 0.86em
+		}
+
+		.il {
+			margin-top: 56px
+		}
+
+		.iw {
+			margin-top: 2em
+		}
+
+		.jf {
+			margin-top: 1.05em
+		}
+
+		.kq {
+			margin-right: 5px
+		}
+
+		.ln {
+			display: inline-block
+		}
+
+		.ls {
+			width: 8px
+		}
+
+		.mp {
+			font-size: 20px
+		}
+
+		.mq {
+			line-height: 24px
+		}
+
+		.mr {
+			max-height: 24px
+		}
+
+		.mx {
+			margin: 0
+		}
+
+		.nq {
+			width: calc(100% + 32px)
+		}
+
+		.nr {
+			margin-left: -16px
+		}
+
+		.ns {
+			margin-right: -16px
+		}
+
+		.oj {
+			padding-left: 16px
+		}
+
+		.ok {
+			padding-right: 16px
+		}
+
+		.ol {
+			flex-basis: 25%
+		}
+
+		.om {
+			max-width: 25%
+		}
+
+		.pa {
+			font-size: 16px
+		}
+
+		.pb {
+			line-height: 20px
+		}
+
+		.px {
+			min-width: 70px
+		}
+
+		.py {
+			min-height: 70px
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE" media="all and (max-width: 1079.98px)">
+		.e {
+			display: none
+		}
+
+		.fv {
+			margin-left: 30px
+		}
+
+		.kp {
+			margin-right: 5px
+		}
+
+		.lm {
+			display: inline-block
+		}
+
+		.lr {
+			width: 8px
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE" media="all and (max-width: 903.98px)">
+		.f {
+			display: none
+		}
+
+		.fu {
+			margin-left: 30px
+		}
+
+		.ko {
+			margin-right: 5px
+		}
+
+		.ll {
+			display: inline-block
+		}
+
+		.lq {
+			width: 8px
+		}
+
+		.ou {
+			margin-right: 16px
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE" media="all and (max-width: 727.98px)">
+		.g {
+			display: none
+		}
+
+		.u {
+			margin-bottom: 20px
+		}
+
+		.ai {
+			box-shadow: inset 0 -1px 0 rgba(230, 230, 230, 1)
+		}
+
+		.aj {
+			min-height: 230px
+		}
+
+		.am {
+			display: block
+		}
+
+		.ck {
+			min-height: 98px
+		}
+
+		.cl {
+			display: flex
+		}
+
+		.cm {
+			align-items: flex-start
+		}
+
+		.cn {
+			flex-direction: column
+		}
+
+		.co {
+			justify-content: flex-end
+		}
+
+		.cu {
+			margin-bottom: 28px
+		}
+
+		.cv {
+			margin-top: 0px
+		}
+
+		.cy {
+			margin-top: 28px
+		}
+
+		.ec {
+			border-top: 1px solid rgba(230, 230, 230, 1)
+		}
+
+		.ed {
+			border-bottom: 1px solid rgba(230, 230, 230, 1)
+		}
+
+		.en {
+			align-items: center
+		}
+
+		.eo {
+			flex: 1 0 auto
+		}
+
+		.fi {
+			margin-top: 32px
+		}
+
+		.fj {
+			flex-direction: column-reverse
+		}
+
+		.fs {
+			margin-bottom: 30px
+		}
+
+		.ft {
+			margin-left: 0px
+		}
+
+		.kn {
+			margin-left: 8px
+		}
+
+		.lk {
+			display: inline-block
+		}
+
+		.lp {
+			width: 8px
+		}
+
+		.nc {
+			padding-bottom: 12px
+		}
+
+		.nd {
+			margin-top: 16px
+		}
+
+		.ot {
+			margin-right: 16px
+		}
+
+		.pe {
+			margin-left: 16px
+		}
+
+		.pf {
+			margin-right: 0px
+		}
+
+		.qb {
+			padding: 32px 0
+		}
+
+		.qi {
+			width: 140px
+		}
+
+		.qk {
+			margin-bottom: 16px
+		}
+
+		.ql {
+			margin-top: 30px
+		}
+
+		.qn {
+			width: 100%
+		}
+
+		.qo {
+			flex-direction: row
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE" media="all and (max-width: 551.98px)">
+		.h {
+			display: none
+		}
+
+		.ap {
+			margin: 0 24px
+		}
+
+		.fh {
+			margin-top: 32px
+		}
+
+		.fq {
+			margin-bottom: 30px
+		}
+
+		.fr {
+			margin-left: 0px
+		}
+
+		.gh {
+			font-size: 18px
+		}
+
+		.gi {
+			line-height: 28px
+		}
+
+		.gj {
+			letter-spacing: -0.003em
+		}
+
+		.hc {
+			font-size: 20px
+		}
+
+		.hd {
+			margin-top: 1.23em
+		}
+
+		.he {
+			line-height: 24px
+		}
+
+		.hf {
+			letter-spacing: 0
+		}
+
+		.hx {
+			margin-top: 0.67em
+		}
+
+		.ih {
+			margin-top: 40px
+		}
+
+		.is {
+			margin-top: 1.56em
+		}
+
+		.jb {
+			margin-top: 1.34em
+		}
+
+		.km {
+			margin-left: 8px
+		}
+
+		.lj {
+			display: inline-block
+		}
+
+		.lo {
+			width: 8px
+		}
+
+		.md {
+			font-size: 16px
+		}
+
+		.me {
+			line-height: 20px
+		}
+
+		.mf {
+			max-height: 20px
+		}
+
+		.mt {
+			margin: 0
+		}
+
+		.ne {
+			width: calc(100% + 24px)
+		}
+
+		.nf {
+			margin-left: -12px
+		}
+
+		.ng {
+			margin-right: -12px
+		}
+
+		.nt {
+			padding-left: 12px
+		}
+
+		.nu {
+			padding-right: 12px
+		}
+
+		.nv {
+			flex-basis: 100%
+		}
+
+		.nw {
+			max-width: 100%
+		}
+
+		.os {
+			margin-right: 16px
+		}
+
+		.pc {
+			margin-bottom: 0px
+		}
+
+		.pp {
+			min-width: 48px
+		}
+
+		.pq {
+			min-height: 48px
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE"
+		media="all and (min-width: 904px) and (max-width: 1079.98px)">
+		.i {
+			display: none
+		}
+
+		.y {
+			display: flex
+		}
+
+		.as {
+			margin: 0 64px
+		}
+
+		.gq {
+			font-size: 21px
+		}
+
+		.gr {
+			line-height: 32px
+		}
+
+		.gs {
+			letter-spacing: -0.003em
+		}
+
+		.ho {
+			font-size: 22px
+		}
+
+		.hp {
+			margin-top: 1.72em
+		}
+
+		.hq {
+			line-height: 28px
+		}
+
+		.hr {
+			letter-spacing: 0
+		}
+
+		.ia {
+			margin-top: 0.86em
+		}
+
+		.ik {
+			margin-top: 56px
+		}
+
+		.iv {
+			margin-top: 2em
+		}
+
+		.je {
+			margin-top: 1.05em
+		}
+
+		.mm {
+			font-size: 20px
+		}
+
+		.mn {
+			line-height: 24px
+		}
+
+		.mo {
+			max-height: 24px
+		}
+
+		.mw {
+			margin: 0
+		}
+
+		.nn {
+			width: calc(100% + 32px)
+		}
+
+		.no {
+			margin-left: -16px
+		}
+
+		.np {
+			margin-right: -16px
+		}
+
+		.of {
+			padding-left: 16px
+		}
+
+		.og {
+			padding-right: 16px
+		}
+
+		.oh {
+			flex-basis: 25%
+		}
+
+		.oi {
+			max-width: 25%
+		}
+
+		.oy {
+			font-size: 16px
+		}
+
+		.oz {
+			line-height: 20px
+		}
+
+		.pv {
+			min-width: 70px
+		}
+
+		.pw {
+			min-height: 70px
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE"
+		media="all and (min-width: 728px) and (max-width: 903.98px)">
+		.j {
+			display: none
+		}
+
+		.z {
+			display: flex
+		}
+
+		.ar {
+			margin: 0 48px
+		}
+
+		.gn {
+			font-size: 21px
+		}
+
+		.go {
+			line-height: 32px
+		}
+
+		.gp {
+			letter-spacing: -0.003em
+		}
+
+		.hk {
+			font-size: 22px
+		}
+
+		.hl {
+			margin-top: 1.72em
+		}
+
+		.hm {
+			line-height: 28px
+		}
+
+		.hn {
+			letter-spacing: 0
+		}
+
+		.hz {
+			margin-top: 0.86em
+		}
+
+		.ij {
+			margin-top: 56px
+		}
+
+		.iu {
+			margin-top: 2em
+		}
+
+		.jd {
+			margin-top: 1.05em
+		}
+
+		.mj {
+			font-size: 20px
+		}
+
+		.mk {
+			line-height: 24px
+		}
+
+		.ml {
+			max-height: 24px
+		}
+
+		.mv {
+			margin: 0
+		}
+
+		.nk {
+			width: calc(100% + 28px)
+		}
+
+		.nl {
+			margin-left: -14px
+		}
+
+		.nm {
+			margin-right: -14px
+		}
+
+		.ob {
+			padding-left: 14px
+		}
+
+		.oc {
+			padding-right: 14px
+		}
+
+		.od {
+			flex-basis: 50%
+		}
+
+		.oe {
+			max-width: 50%
+		}
+
+		.ow {
+			font-size: 16px
+		}
+
+		.ox {
+			line-height: 20px
+		}
+
+		.pt {
+			min-width: 48px
+		}
+
+		.pu {
+			min-height: 48px
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE"
+		media="all and (min-width: 552px) and (max-width: 727.98px)">
+		.k {
+			display: none
+		}
+
+		.aq {
+			margin: 0 24px
+		}
+
+		.gk {
+			font-size: 18px
+		}
+
+		.gl {
+			line-height: 28px
+		}
+
+		.gm {
+			letter-spacing: -0.003em
+		}
+
+		.hg {
+			font-size: 20px
+		}
+
+		.hh {
+			margin-top: 1.23em
+		}
+
+		.hi {
+			line-height: 24px
+		}
+
+		.hj {
+			letter-spacing: 0
+		}
+
+		.hy {
+			margin-top: 0.67em
+		}
+
+		.ii {
+			margin-top: 40px
+		}
+
+		.it {
+			margin-top: 1.56em
+		}
+
+		.jc {
+			margin-top: 1.34em
+		}
+
+		.mg {
+			font-size: 16px
+		}
+
+		.mh {
+			line-height: 20px
+		}
+
+		.mi {
+			max-height: 20px
+		}
+
+		.mu {
+			margin: 0
+		}
+
+		.nh {
+			width: calc(100% + 24px)
+		}
+
+		.ni {
+			margin-left: -12px
+		}
+
+		.nj {
+			margin-right: -12px
+		}
+
+		.nx {
+			padding-left: 12px
+		}
+
+		.ny {
+			padding-right: 12px
+		}
+
+		.nz {
+			flex-basis: 100%
+		}
+
+		.oa {
+			max-width: 100%
+		}
+
+		.pr {
+			min-width: 48px
+		}
+
+		.ps {
+			min-height: 48px
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE" media="print">
+		.fx {
+			display: none
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE"
+		media="(prefers-reduced-motion: no-preference)">
+		.el {
+			animation: k2 .2s ease-in-out both
+		}
+
+		.jl {
+			transition: opacity 200ms
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE" media="all and (max-width: 1230px)">
+		.jm {
+			display: none
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE" media="all and (max-width: 1240px)">
+		.jp {
+			display: none
+		}
+	</style>
+	<style type="text/css" data-fela-rehydration="456" data-fela-type="RULE"
+		media="(orientation: landscape) and (max-width: 903.98px)">
+		.kg {
+			max-height: none
+		}
+	</style>
+</head>
+
+<body>
+	<div id="root">
+		<div class="a b c">
+			<div class="d e f g h i j k"></div>
+			<script>document.domain = document.domain;</script>
+			<div class="s">
+				<div class="t s u">
+					<div class="ag ah s ai aj">
+						<div class="n ak">
+							<div class="al am">
+								<div class="an s ao ae">
+									<div class="n p">
+										<div class="ap aq ar as at au av w">
+											<div class="aw n o">
+												<div class="n o ax ay">
+													<div class="az s"><span><button
+																class="ba b bb bc bd be bf bg bh bi bj bk bl bm bn bo bp bq br bs bt bu bv bw">Get
+																started</button></span></div>
+													<div class="bx al am"><span class="ba b bb bc by"><a
+																href="https://rsci.app.link/?%24canonical_url=https%3A%2F%2Fmedium.com%2Fp%2Fb44d683f5824&amp;~feature=LoOpenInAppButton&amp;~channel=ShowPostUnderUser&amp;~stage=mobileNavBar&amp;source=post_page-----b44d683f5824--------------------------------"
+																class="bd bg bz ca cb cc cd ce cf bl bi bj cg ch ci"
+																rel="noopener nofollow">Open in app</a></span></div>
+												</div><a
+													href="https://medium.com/?source=post_page-----b44d683f5824--------------------------------"
+													rel="noopener" aria-label="Homepage"><svg
+														viewBox="0 0 1043.63 592.71" class="q r">
+														<g data-name="Layer 2">
+															<g data-name="Layer 1">
+																<path
+																	d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36M911.56 296.36c0 154.06-65.89 279-147.17 279s-147.17-124.94-147.17-279 65.88-279 147.16-279 147.17 124.9 147.17 279M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94">
+																</path>
+															</g>
+														</g>
+													</svg></a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="n p">
+								<div class="ap aq ar as at au av w">
+									<div class="ah n o ax cj ck cl cm cn co">
+										<div class="w n cp cj">
+											<div class="v n w">
+												<div class="cq cr w n cs ax ct cu cv cl cm cn">
+													<div class="cw cx s cy"><a rel="noopener"
+															aria-label="Author Homepage"
+															href="/@jeikabu?source=post_page-----b44d683f5824--------------------------------"><span
+																class="ba cz da db dc dd de df dg dh di dj dk dl dm">Jeikabu</span></a>
+													</div>
+													<div class="cw s g"><span
+															class="ba b dn do dp dd de df dg dh di dj by">
+															<div class="n o">
+																<div class="dq n ak"><a
+																		class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw"
+																		rel="noopener"
+																		href="/@jeikabu/about?source=post_page-----b44d683f5824--------------------------------">About</a>
+																</div>
+															</div>
+														</span></div>
+												</div>
+											</div>
+											<div class="x y z k h ab ac o ae af">
+												<p class="ba b bb bc by"><span><a
+															class="bd bg bz ca cb cc cd ce cf bl bi bj cg ch ci"
+															rel="noopener"
+															href="/m/signin?operation=login&amp;redirect=https%3A%2F%2Fmedium.com%2F%40jeikabu%2Fnative-code-in-net-5-0-and-c-9-0-b44d683f5824&amp;source=post_page-----b44d683f5824---------------------nav_reg-----------">Sign
+															in</a></span></p>
+												<div class="dx dy dz cx s"><span><button
+															class="ba b bb bc bd be bf bg bh bi bj bk bl bm bn bo bp bq br bs bt bu bv bw">Get
+															started</button></span></div><a
+													href="https://medium.com/?source=post_page-----b44d683f5824--------------------------------"
+													rel="noopener" aria-label="Homepage"><svg
+														viewBox="0 0 1043.63 592.71" class="q r">
+														<g data-name="Layer 2">
+															<g data-name="Layer 1">
+																<path
+																	d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36M911.56 296.36c0 154.06-65.89 279-147.17 279s-147.17-124.94-147.17-279 65.88-279 147.16-279 147.17 124.9 147.17 279M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94">
+																</path>
+															</g>
+														</g>
+													</svg></a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="al am">
+							<div class="n p">
+								<div class="ap aq ar as at au av w">
+									<div>
+										<div class="ea eb n o">
+											<div class="s"><span class="ba b dn do dp dd de df dg dh di dj by">
+													<div class="n o">
+														<div class="dq n ak"><a
+																class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw"
+																rel="noopener"
+																href="/@jeikabu/about?source=post_page-----b44d683f5824--------------------------------">About</a>
+														</div>
+													</div>
+												</span></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="ec ed ee ef c eg eh ei ej ek af ae el">
+						<div class="n p">
+							<div class="ap aq ar as at au av w">
+								<div class="em w al ek ae cl en">
+									<div class="al cl en eo"><span><button
+												class="ba b bb bc bd be bf bg bh bi bj bk bl bm bn bo bp bq br bs bt bu bv bw">Get
+												started</button></span>
+										<div class="ep al am"><span class="ba b bb bc by"><a
+													href="https://rsci.app.link/?%24canonical_url=https%3A%2F%2Fmedium.com%2Fp%2Fb44d683f5824&amp;~feature=LoOpenInAppButton&amp;~channel=ShowPostUnderUser&amp;~stage=mobileNavBar&amp;source=post_page-----b44d683f5824--------------------------------"
+													class="bd bg bz ca cb cc cd ce cf bl bi bj cg ch ci"
+													rel="noopener nofollow">Open in app</a></span></div>
+									</div><a
+										href="https://medium.com/?source=post_page-----b44d683f5824--------------------------------"
+										rel="noopener" aria-label="Homepage"><svg viewBox="0 0 1043.63 592.71"
+											class="q r">
+											<g data-name="Layer 2">
+												<g data-name="Layer 1">
+													<path
+														d="M588.67 296.36c0 163.67-131.78 296.35-294.33 296.35S0 460 0 296.36 131.78 0 294.34 0s294.33 132.69 294.33 296.36M911.56 296.36c0 154.06-65.89 279-147.17 279s-147.17-124.94-147.17-279 65.88-279 147.16-279 147.17 124.9 147.17 279M1043.63 296.36c0 138-23.17 249.94-51.76 249.94s-51.75-111.91-51.75-249.94 23.17-249.94 51.75-249.94 51.76 111.9 51.76 249.94">
+													</path>
+												</g>
+											</g>
+										</svg></a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<article>
+					<section class="eq er es et w eu bu s"></section><span class="s"></span>
+					<div>
+						<div class="fb eg fc fd fe ff"></div>
+						<section>
+							<div class="n p">
+								<div class="ap aq ar as at fg av w">
+									<div class="s">
+										<div class="cw">
+											<div class="n cj fh fi fj">
+												<div class="o n">
+													<div><a rel="noopener"
+															href="/@jeikabu?source=post_page-----b44d683f5824--------------------------------"><img
+																alt="Jeikabu" class="s fk fl fm"
+																src="https://miro.medium.com/fit/c/56/56/1*dmbNkD5D-u45r44go_cf0g.png"
+																width="28" height="28" /></a></div>
+													<div class="dq w n ct">
+														<div class="n">
+															<div style="flex:1"><span class="ba b bb bc fn"><a class=""
+																		rel="noopener"
+																		href="/@jeikabu?source=post_page-----b44d683f5824--------------------------------">
+																		<p class="ba b bb bc bd">Jeikabu</p>
+																	</a></span></div>
+														</div><span class="ba b bb bc by"><a class="" rel="noopener"
+																href="/@jeikabu/native-code-in-net-5-0-and-c-9-0-b44d683f5824?source=post_page-----b44d683f5824--------------------------------">
+																<p class="ba b bb bc by"><span class="fo"></span>Jun
+																	18<span class="fp">·</span>4 min read</p>
+															</a></span>
+													</div>
+												</div>
+												<div class="n cs fq fr fs ft fu fv fw fx">
+													<div class="n o">
+														<div class="fy s">
+															<div class="bv" aria-hidden="false"
+																aria-describedby="postFooterSocialMenu"
+																aria-labelledby="postFooterSocialMenu">
+																<div>
+																	<div class="bv" role="tooltip" aria-hidden="false">
+																		<button
+																			class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw"
+																			aria-controls="postFooterSocialMenu"
+																			aria-expanded="false"
+																			aria-label="Share Post"><svg width="25"
+																				height="25" class="r">
+																				<g fill-rule="evenodd">
+																					<path
+																						d="M15.6 5a.42.42 0 0 0 .17-.3.42.42 0 0 0-.12-.33l-2.8-2.79a.5.5 0 0 0-.7 0l-2.8 2.8a.4.4 0 0 0-.1.32c0 .12.07.23.16.3h.02a.45.45 0 0 0 .57-.04l2-2V10c0 .28.23.5.5.5s.5-.22.5-.5V2.93l2.02 2.02c.08.07.18.12.3.13.11.01.21-.02.3-.08v.01">
+																					</path>
+																					<path
+																						d="M18 7h-1.5a.5.5 0 0 0 0 1h1.6c.5 0 .9.4.9.9v10.2c0 .5-.4.9-.9.9H6.9a.9.9 0 0 1-.9-.9V8.9c0-.5.4-.9.9-.9h1.6a.5.5 0 0 0 .35-.15A.5.5 0 0 0 9 7.5a.5.5 0 0 0-.15-.35A.5.5 0 0 0 8.5 7H7a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h11a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2">
+																					</path>
+																				</g>
+																			</svg></button></div>
+																</div>
+															</div>
+														</div>
+														<div class="fz s"></div>
+														<div class="s ay"></div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</section>
+						<section class="dm ga gb dh gc">
+							<div class="n p">
+								<div class="ap aq ar as at fg av w">
+									<p id="0e83"
+										class="gd ge gf gg b gh gi gj gk gl gm gn go gp gq gr gs gt gu gv gw gx dm fn">A
+										while back <a
+											href="https://rendered-obsolete.github.io/2018/09/09/native-assembly.html"
+											class="dr gy" rel="noopener nofollow">we covered working with native
+											assemblies</a>. It’s worth re-reading to familiarize yourself with the
+										problem and prior solutions. There’s been a few new options introduced in .NET
+										Core and .NET 5.0.</p>
+									<h2 id="7f71"
+										class="gz ha gf ba hb hc hd he hf hg hh hi hj hk hl hm hn ho hp hq hr hs ht hu hv hw fn">
+										NativeLibrary</h2>
+									<p id="ae81"
+										class="gd ge gf gg b gh hx gi gj gk hy gl gm gn hz go gp gq ia gr gs gt ib gu gv gx dm fn">
+										The <a
+											href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.nativelibrary"
+											class="dr gy" rel="noopener nofollow">NativeLibary</a> static class was
+										introduced in .NET Core 3.0 and makes it easy to use <code
+											class="ic id ie if ig b">DllImport</code> in a portable way. To call a
+										function <code class="ic id ie if ig b">nng_alloc()</code> in a native shared
+										library:</p>
+									<pre
+										class="ih ii ij ik il im in io"><span id="797b" class="fn gz ha gf ig b dn ip iq s ir">// In `nng.NETCore` managed assembly<br/>namespace nng.Native.Basic<br/>{<br/>    public sealed class UnsafeNativeMethods<br/>    {<br/>        public const string NngDll = &quot;nng&quot;;<br/>        <br/>        [DllImport(NngDll, CallingConvention = CallingConvention.Cdecl)]<br/>        public static extern IntPtr nng_alloc(UIntPtr size);<br/>    }<br/>}<br/><br/>// In assembly that references `nng.NETCore`<br/>namespace benchmarks<br/>{<br/>    class Program<br/>    {<br/>        static void Main(string[] args) <br/>        {<br/>            NativeLibrary.SetDllImportResolver(typeof(nng.Native.Basic.UnsafeNativeMethods).Assembly, DllImportResolver);<br/>            // Calling DllImport&#x27;d method triggers resolver<br/>            nng.Native.Basic.UnsafeNativeMethods.nng_alloc(UIntPtr.Zero);<br/>        }<br/><br/>        static IntPtr DllImportResolver(string libraryName, System.Reflection.Assembly assembly, DllImportSearchPath? searchPath)<br/>        {<br/>            // Load platform-specific unmanaged shared library. e.g.:<br/>            var path = &quot;runtimes/osx-x64/native/libnng.dylib&quot;;<br/>            return NativeLibrary.Load(path);<br/>        }<br/>    }<br/>}</span></pre>
+									<p id="d8e3"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										None of the mess of calling <code class="ic id ie if ig b">dlopen()</code> on
+										Mac/*nix or <code class="ic id ie if ig b">LoadLibrary()</code> on Windows to
+										load a *.so or *.dll, respectively.</p>
+									<p id="6ab2"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										If <code class="ic id ie if ig b">DYLD_PRINT_LIBRARIES</code> env variable is
+										set before running the code:</p>
+									<pre
+										class="ih ii ij ik il im in io"><span id="9ef0" class="fn gz ha gf ig b dn ip iq s ir">dyld: loaded: &lt;264EA187-4189-3CE5-82C3-9746FFE68B66&gt; runtimes/osx-x64/native/libnng.dylib</span></pre>
+									<h2 id="cc69"
+										class="gz ha gf ba hb hc hd he hf hg hh hi hj hk hl hm hn ho hp hq hr hs ht hu hv hw fn">
+										Function Pointers</h2>
+									<p id="e7f6"
+										class="gd ge gf gg b gh hx gi gj gk hy gl gm gn hz go gp gq ia gr gs gt ib gu gv gx dm fn">
+										.NET <span id="rmm"><span id="rmm">5</span></span>.0 and C# 9.0 <a
+											href="https://devblogs.microsoft.com/dotnet/improvements-in-native-code-interop-in-net-5-0/"
+											class="dr gy" rel="noopener nofollow">introduced function pointers</a> as “a
+										performant way to call native functions from C#”.</p>
+									<pre
+										class="ih ii ij ik il im in io"><span id="e06c" class="fn gz ha gf ig b dn ip iq s ir">public class Pointer<br/>{<br/>    public void CallFunctionPointer()<br/>    {<br/>        // Load platform-specific native library<br/>        var handle = NativeLibrary.Load(&quot;xxx&quot;);<br/>        // Get address of exported symbol<br/>        var ptr = NativeLibrary.GetExport(handle, &quot;nng_alloc&quot;);<br/>        // Function pointers require `unsafe` context<br/>        unsafe<br/>        {<br/>            var nng_alloc = (delegate* unmanaged[Cdecl]&lt;nuint, nint&gt;)ptr;<br/>            // Call through function pointer<br/>            nng_alloc(0);<br/>        }<br/>    }<br/>}</span></pre>
+									<p id="51c6"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										<code
+											class="ic id ie if ig b"><a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.nativelibrary.getexport" class="dr gy" rel="noopener nofollow">NativeLibrary.GetExport()</a></code>
+										returns the address of a symbol exported by a shared library. It effectively
+										replaces calling the native functions <code
+											class="ic id ie if ig b">GetProcAddress()</code> and <code
+											class="ic id ie if ig b">dlsym()</code> on Windows and Mac/*nix,
+										respectively.</p>
+									<p id="20c7"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										Function pointers use the funky syntax <code
+											class="ic id ie if ig b">delegate* unmanaged[Cdecl]&lt;args, retval&gt;</code>
+										(detailed <a
+											href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-9.0/function-pointers"
+											class="dr gy" rel="noopener nofollow">here</a>):</p>
+									<p id="92e8"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										| Part | Description |-|- | <code class="ic id ie if ig b">delegate*</code> |
+										Reuses <code
+											class="ic id ie if ig b"><a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/delegates/" class="dr gy" rel="noopener nofollow">delegate</a></code>
+										keyword and <code class="ic id ie if ig b">*</code> denotes an unsafe pointer |
+										<code class="ic id ie if ig b">unmanaged</code> | Either <code
+											class="ic id ie if ig b">managed</code> or <code
+											class="ic id ie if ig b">unmanaged</code> depending on the function | <code
+											class="ic id ie if ig b">[Cdecl]</code> | Optional after <code
+											class="ic id ie if ig b">managed</code>. One or more comma-separated <code
+											class="ic id ie if ig b"><a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices" class="dr gy" rel="noopener nofollow">System.Runtime.CompilerServices.CallConv*</a></code>
+										values. Here <code
+											class="ic id ie if ig b"><a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.callconvcdecl" class="dr gy" rel="noopener nofollow">CallConvCdecl</a></code>
+										| <code class="ic id ie if ig b">&lt;args, retval&gt;</code> | Function
+										signature types- arguments followed by return value (same as <code
+											class="ic id ie if ig b"><a href="https://docs.microsoft.com/en-us/dotnet/api/system.func-2" class="dr gy" rel="noopener nofollow">System.Func</a></code>)
+									</p>
+									<h2 id="f546"
+										class="gz ha gf ba hb hc hd he hf hg hh hi hj hk hl hm hn ho hp hq hr hs ht hu hv hw fn">
+										Comparison</h2>
+									<p id="1931"
+										class="gd ge gf gg b gh hx gi gj gk hy gl gm gn hz go gp gq ia gr gs gt ib gu gv gx dm fn">
+										A <a class="dr gy" rel="noopener"
+											href="/@jarl.gullberg/an-introduction-to-adl-or-how-to-double-your-native-net-interop-performance-c008e4da54db">post
+											on medium</a> compared the performance of different interop approaches a few
+										years ago. We can re-run the same comparison passing arguments by-value with
+										.NET 5.0 using <a href="https://github.com/dotnet/BenchmarkDotNet" class="dr gy"
+											rel="noopener nofollow">BenchmarkDotNet</a>.</p>
+									<p id="7ae8"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										<code class="ic id ie if ig b">nng_aio_set_output(null, 9, null)</code> should
+										be a reasonable choice to benchmark native interop performance because <a
+											href="https://github.com/nanomsg/nng/blob/7a0de1b25287f08b73c04d4f9c2834ae265cc382/src/nng.c#L1821"
+											class="dr gy" rel="noopener nofollow">for values greater than <strong
+												class="gg cz">3</strong> it immediately returns </a><code
+											class="ic id ie if ig b"><a href="https://github.com/nanomsg/nng/blob/7a0de1b25287f08b73c04d4f9c2834ae265cc382/src/nng.c#L1821" class="dr gy" rel="noopener nofollow">EINVAL</a></code>.
+									</p>
+									<p id="2a9f"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										The results on a 2019 13&quot; MacBook Pro with Quad-core i5 @ 2.4 GHz, 16 GB
+										RAM, running macOS Big Sur (11.3), and .NET 5.0.101:</p>
+									<p id="9e8d"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										| Method | Mean | Error | StdDev | Ratio | RatioSD | | — — — — — — — — — — — — —
+										| — — — — — :| — — — — — :| — — — — — :| — — — :| — — — — :| | CallDelegate |
+										16.989 ns | 0.3568 ns | 0.3163 ns | 13.01 | 0.74 | | CallDllImport | 7.184 ns |
+										0.1639 ns | 0.1279 ns | 5.49 | 0.22 | | CallInterfaceToDllImport | 10.939 ns |
+										0.3972 ns | 1.1711 ns | 8.07 | 0.75 | | CallFunctionPointer | 6.733 ns | 0.1613
+										ns | 0.2208 ns | 5.22 | 0.30 | | CallManaged | 1.305 ns | 0.0548 ns | 0.0563 ns
+										| 1.00 | 0.00 |</p>
+									<p id="48b4"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										Looking at <em class="ix">CallDllImport</em> and <em
+											class="ix">CallFunctionPointer</em>, function pointers are ~5–10% faster
+										than <code class="ic id ie if ig b">DllImport</code>.</p>
+									<p id="8427"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										<em class="ix">CallDelegate</em> uses <a
+											href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.marshal.getfunctionpointerfordelegate"
+											class="dr gy"
+											rel="noopener nofollow">Marshal.GetFunctionPointerForDelegate</a> to call
+										via a managed <code class="ic id ie if ig b">delegate</code>. Similar to before,
+										it&#x27;s slowest by a sizeable margin.</p>
+									<p id="7606"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										<em class="ix">CallInterfaceToDllImport</em> is the way we’re currently calling
+										native functions in <a href="https://github.com/jeikabu/nng.NETCore"
+											class="dr gy" rel="noopener nofollow">nng.NET</a>; through an <code
+											class="ic id ie if ig b">interface</code> to static functions decorated with
+										<code class="ic id ie if ig b">DllImport</code>. Based on these results,
+										leveraging <code class="ic id ie if ig b">NativeLibrary</code> and function
+										pointers we can reduce interop overhead by ~33%. Not too shabby.</p>
+									<p id="aa65"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										To see what’s going on, we can use <a
+											href="https://github.com/icsharpcode/ILSpy" class="dr gy"
+											rel="noopener nofollow">ILSpy</a> via the <a
+											href="https://marketplace.visualstudio.com/items?itemName=icsharpcode.ilspy-vscode"
+											class="dr gy" rel="noopener nofollow">VSCode plugin</a> to decompile the
+										assembly. Open the <em class="ix">Command Palette</em> (<code
+											class="ic id ie if ig b">CMD+SHIFT+E</code>), run &quot;ILSpy: Decompile IL
+										Assembly (pick file)&quot;, and select the desired assembly/*.dll. In the <em
+											class="ix">Explorer View</em> (<code
+											class="ic id ie if ig b">CMD+SHIFT+E</code>), browse to <strong
+											class="gg cz">ILSPY DECOMPILED MEMBERS &gt; benchmarks &gt; Pointer &gt;
+											CallFunctionPointer</strong>:</p>
+									<pre
+										class="ih ii ij ik il im in io"><span id="a69e" class="fn gz ha gf ig b dn ip iq s ir">IL_0000: ldarg.0<br/>	IL_0001: ldfld method int32 *(native int, uint32, native int) benchmarks.Pointer::nng_aio_set_output /* 04000003 */<br/>	IL_0006: stloc.1<br/>	IL_0007: ldsfld native int [System.Runtime]System.IntPtr::Zero /* 0A000015 */<br/>	IL_000c: ldc.i4.s 9<br/>	IL_000e: ldsfld native int [System.Runtime]System.IntPtr::Zero /* 0A000015 */<br/>	IL_0013: ldloc.1<br/>	IL_0014: calli unmanaged cdecl int32(native int, uint32, native int) /* 11000004 */<br/>	IL_0019: stloc.0<br/>	IL_001a: ret</span></pre>
+									<p id="7108"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										And the decompiled source:</p>
+									<pre
+										class="ih ii ij ik il im in io"><span id="507b" class="fn gz ha gf ig b dn ip iq s ir">public unsafe void CallFunctionPointer()<br/>{<br/>	IntPtr intPtr = nng_aio_set_output;<br/>	int num = ((delegate* cdecl&lt;IntPtr, uint, IntPtr, int&gt;)intPtr)(IntPtr.Zero, 9u, IntPtr.Zero);<br/>}</span></pre>
+									<p id="2b6a"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										So, for whatever reason it turns our function pointer into an <code
+											class="ic id ie if ig b">IntPtr</code> and then casts it to <code
+											class="ic id ie if ig b">cdecl</code> (which must be an internal symbol
+										because we can&#x27;t use it). But the key thing is the use of <code
+											class="ic id ie if ig b">calli</code>. Compare that with <strong
+											class="gg cz">benchmarks &gt; DllImport &gt; CallDllImport</strong>:</p>
+									<pre
+										class="ih ii ij ik il im in io"><span id="18e1" class="fn gz ha gf ig b dn ip iq s ir">IL_0000: ldsfld valuetype [nng.NET.Shared]nng.Native.nng_aio [nng.NET.Shared]nng.Native.nng_aio::Null /* 0A000014 */<br/>	IL_0005: ldc.i4.s 9<br/>	IL_0007: ldsfld native int [System.Runtime]System.IntPtr::Zero /* 0A000015 */<br/>	IL_000c: call int32 [nng.NET]nng.Native.Aio.UnsafeNativeMethods::nng_aio_set_output(valuetype [nng.NET.Shared]nng.Native.nng_aio, uint32, native int) /* 0A00001C */<br/>	IL_0011: stloc.0<br/>	IL_0012: ret</span></pre>
+									<p id="e2a2"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										<code class="ic id ie if ig b">DllImport</code> uses <code
+											class="ic id ie if ig b">call</code>. Based on the docs for <a
+											href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.emit.opcodes.call"
+											class="dr gy" rel="noopener nofollow">call</a> and <a
+											href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.emit.opcodes.calli"
+											class="dr gy" rel="noopener nofollow">calli</a> opcodes, <code
+											class="ic id ie if ig b">call</code> uses a &quot;method descriptor&quot;
+										that is a &quot;metadata token&quot; (and works with virtual functions) while
+										<code class="ic id ie if ig b">calli</code> is just &quot;a pointer to an entry
+										point&quot;- and apparently faster.</p>
+									<p id="a25c"
+										class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx dm fn">
+										Additional reading:</p>
+									<ul class="">
+										<li id="340a"
+											class="gd ge gf gg b gh is gi gj gk it gl gm gn iu go gp gq iv gr gs gt iw gu gv gx iy iz ja fn">
+											<a href="https://docs.microsoft.com/en-us/dotnet/core/dependency-loading/understanding-assemblyloadcontext"
+												class="dr gy" rel="noopener nofollow">Understanding
+												System.Runtime.Loader.AssemblyLoadContext</a></li>
+										<li id="e6f6"
+											class="gd ge gf gg b gh jb gi gj gk jc gl gm gn jd go gp gq je gr gs gt jf gu gv gx iy iz ja fn">
+											<a href="https://docs.microsoft.com/en-us/dotnet/core/dependency-loading/loading-unmanaged"
+												class="dr gy" rel="noopener nofollow">Unmanaged (native) library loading
+												algorithm</a></li>
+									</ul>
+								</div>
+							</div>
+						</section>
+					</div>
+				</article>
+				<div class="eh ff ei jn w jo ek jl jp" data-test-id="post-sidebar">
+					<div class="n p">
+						<div class="ap aq ar as at au av w">
+							<div class="jq n ak">
+								<div class="ff">
+									<div>
+										<div class="jr s">
+											<div class="js s"><a class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw"
+													rel="noopener"
+													href="/@jeikabu?source=post_sidebar--------------------------post_sidebar-----------">
+													<h2 class="ba hb dn bc dk fn dm">Jeikabu</h2>
+												</a></div>
+											<div class="jt s"><span><button
+														class="ba b bb bc ju be jv jw bh jx bk bl bm bn jy bq br bs bt bu bv bw">Follow</button></span>
+											</div>
+										</div>
+										<div class="ki kj w n o ax kk">
+											<div class="kl n">
+												<div class="n o">
+													<div class="s ao km kn ko kp kq"><span><a
+																class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw"
+																rel="noopener"
+																href="/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fb44d683f5824&amp;operation=register&amp;redirect=https%3A%2F%2Fmedium.com%2F%40jeikabu%2Fnative-code-in-net-5-0-and-c-9-0-b44d683f5824&amp;user=Jeikabu&amp;userId=b211c0096c86&amp;source=post_sidebar-----b44d683f5824---------------------clap_sidebar-----------">
+																<div class="ce kr ks kt ku kv kw kx r ky kz"><svg
+																		width="29" height="29" aria-label="clap">
+																		<g fill-rule="evenodd">
+																			<path
+																				d="M13.74 1l.76 2.97.76-2.97zM16.82 4.78l1.84-2.56-1.43-.47zM10.38 2.22l1.84 2.56-.41-3.03zM22.38 22.62a5.11 5.11 0 0 1-3.16 1.61l.49-.45c2.88-2.89 3.45-5.98 1.69-9.21l-1.1-1.94-.96-2.02c-.31-.67-.23-1.18.25-1.55a.84.84 0 0 1 .66-.16c.34.05.66.28.88.6l2.85 5.02c1.18 1.97 1.38 5.12-1.6 8.1M9.1 22.1l-5.02-5.02a1 1 0 0 1 .7-1.7 1 1 0 0 1 .72.3l2.6 2.6a.44.44 0 0 0 .63-.62L6.1 15.04l-1.75-1.75a1 1 0 1 1 1.41-1.41l4.15 4.15a.44.44 0 0 0 .63 0 .44.44 0 0 0 0-.62L6.4 11.26l-1.18-1.18a1 1 0 0 1 0-1.4 1.02 1.02 0 0 1 1.41 0l1.18 1.16L11.96 14a.44.44 0 0 0 .62 0 .44.44 0 0 0 0-.63L8.43 9.22a.99.99 0 0 1-.3-.7.99.99 0 0 1 .3-.7 1 1 0 0 1 1.41 0l7 6.98a.44.44 0 0 0 .7-.5l-1.35-2.85c-.31-.68-.23-1.19.25-1.56a.85.85 0 0 1 .66-.16c.34.06.66.28.88.6L20.63 15c1.57 2.88 1.07 5.54-1.55 8.16a5.62 5.62 0 0 1-5.06 1.65 9.35 9.35 0 0 1-4.93-2.72zM13 6.98l2.56 2.56c-.5.6-.56 1.41-.15 2.28l.26.56-4.25-4.25a.98.98 0 0 1-.12-.45 1 1 0 0 1 .29-.7 1.02 1.02 0 0 1 1.41 0zm8.89 2.06c-.38-.56-.9-.92-1.49-1.01a1.74 1.74 0 0 0-1.34.33c-.38.29-.61.65-.71 1.06a2.1 2.1 0 0 0-1.1-.56 1.78 1.78 0 0 0-.99.13l-2.64-2.64a1.88 1.88 0 0 0-2.65 0 1.86 1.86 0 0 0-.48.85 1.89 1.89 0 0 0-2.67-.01 1.87 1.87 0 0 0-.5.9c-.76-.75-2-.75-2.7-.04a1.88 1.88 0 0 0 0 2.66c-.3.12-.61.29-.87.55a1.88 1.88 0 0 0 0 2.66l.62.62a1.88 1.88 0 0 0-.9 3.16l5.01 5.02c1.6 1.6 3.52 2.64 5.4 2.96a7.16 7.16 0 0 0 1.18.1c1.03 0 2-.25 2.9-.7A5.9 5.9 0 0 0 23 23.24c3.34-3.34 3.08-6.93 1.74-9.17l-2.87-5.04z">
+																			</path>
+																		</g>
+																	</svg></div>
+															</a></span></div>
+												</div>
+											</div>
+											<div class="la kl s"><button class="ku ks ce">
+													<div class="n o ax">
+														<div class="n o"><svg width="25" height="25"
+																aria-label="responses" class="lb lc ku kz">
+																<path
+																	d="M19.07 21.12a6.33 6.33 0 0 1-3.53-1.1 7.8 7.8 0 0 1-.7-.52c-.77.21-1.57.32-2.38.32-4.67 0-8.46-3.5-8.46-7.8C4 7.7 7.79 4.2 12.46 4.2c4.66 0 8.46 3.5 8.46 7.8 0 2.06-.85 3.99-2.4 5.45a6.28 6.28 0 0 0 1.14 2.59c.15.21.17.48.06.7a.69.69 0 0 1-.62.38h-.03zm0-1v.5l.03-.5h-.03zm-3.92-1.64l.21.2a6.09 6.09 0 0 0 3.24 1.54 7.14 7.14 0 0 1-.83-1.84 5.15 5.15 0 0 1-.16-.75 2.4 2.4 0 0 1-.02-.29v-.23l.18-.15a6.6 6.6 0 0 0 2.3-4.96c0-3.82-3.4-6.93-7.6-6.93-4.19 0-7.6 3.11-7.6 6.93 0 3.83 3.41 6.94 7.6 6.94.83 0 1.64-.12 2.41-.35l.28-.08z"
+																	fill-rule="evenodd"></path>
+															</svg></div>
+													</div>
+												</button></div>
+											<div class="ld s"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="eh ff jg ei jh ji jj jk jl jm"></div>
+				<div>
+					<div class="le lf n ak p">
+						<div class="n p">
+							<div class="ap aq ar as at fg av w">
+								<div class="n ct"></div>
+								<div class="n o ct"></div>
+								<div class="lg lh s">
+									<div class="lh n cj fx">
+										<div class="n o ax">
+											<div class="li s"><span class="s lj lk ll e d">
+													<div class="n o">
+														<div class="s ao km kn ko kp kq"><span><a
+																	class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw"
+																	rel="noopener"
+																	href="/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fb44d683f5824&amp;operation=register&amp;redirect=https%3A%2F%2Fmedium.com%2F%40jeikabu%2Fnative-code-in-net-5-0-and-c-9-0-b44d683f5824&amp;user=Jeikabu&amp;userId=b211c0096c86&amp;source=post_actions_footer-----b44d683f5824---------------------clap_footer-----------">
+																	<div class="ce kr ks kt ku kv kw kx r ky kz"><svg
+																			width="25" height="25" viewBox="0 0 25 25"
+																			aria-label="clap">
+																			<g fill-rule="evenodd">
+																				<path
+																					d="M11.74 0l.76 2.97.76-2.97zM14.81 3.78l1.84-2.56-1.42-.47zM8.38 1.22l1.84 2.56L9.8.75zM20.38 21.62a5.11 5.11 0 0 1-3.16 1.61l.49-.45c2.88-2.89 3.45-5.98 1.69-9.21l-1.1-1.94-.96-2.02c-.31-.67-.23-1.18.25-1.55a.84.84 0 0 1 .66-.16c.34.05.66.28.88.6l2.85 5.02c1.18 1.97 1.38 5.12-1.6 8.1M7.1 21.1l-5.02-5.02a1 1 0 0 1 .7-1.7 1 1 0 0 1 .72.3l2.6 2.6a.44.44 0 0 0 .63-.62L4.1 14.04l-1.75-1.75a1 1 0 1 1 1.41-1.41l4.15 4.15a.44.44 0 0 0 .63 0 .44.44 0 0 0 0-.62L4.4 10.26 3.22 9.08a1 1 0 0 1 0-1.4 1.02 1.02 0 0 1 1.41 0l1.18 1.16L9.96 13a.44.44 0 0 0 .62 0 .44.44 0 0 0 0-.63L6.43 8.22a.99.99 0 0 1-.3-.7.99.99 0 0 1 .3-.7 1 1 0 0 1 1.41 0l7 6.98a.44.44 0 0 0 .7-.5l-1.35-2.85c-.31-.68-.23-1.19.25-1.56a.85.85 0 0 1 .66-.16c.34.06.66.28.88.6L18.63 14c1.57 2.88 1.07 5.54-1.55 8.16a5.62 5.62 0 0 1-5.06 1.65 9.35 9.35 0 0 1-4.93-2.72zM11 5.98l2.56 2.56c-.5.6-.56 1.41-.15 2.28l.26.56-4.25-4.25a.98.98 0 0 1-.12-.45 1 1 0 0 1 .29-.7 1.02 1.02 0 0 1 1.41 0zm8.89 2.06c-.38-.56-.9-.92-1.49-1.01a1.74 1.74 0 0 0-1.34.33c-.38.29-.61.65-.71 1.06a2.1 2.1 0 0 0-1.1-.56 1.78 1.78 0 0 0-.99.13l-2.64-2.64a1.88 1.88 0 0 0-2.65 0 1.86 1.86 0 0 0-.48.85 1.89 1.89 0 0 0-2.67-.01 1.87 1.87 0 0 0-.5.9c-.76-.75-2-.75-2.7-.04a1.88 1.88 0 0 0 0 2.66c-.3.12-.61.29-.87.55a1.88 1.88 0 0 0 0 2.66l.62.62a1.88 1.88 0 0 0-.9 3.16l5.01 5.02c1.6 1.6 3.52 2.64 5.4 2.96a7.16 7.16 0 0 0 1.18.1c1.03 0 2-.25 2.9-.7A5.9 5.9 0 0 0 21 22.24c3.34-3.34 3.08-6.93 1.74-9.17l-2.87-5.04z">
+																				</path>
+																			</g>
+																		</svg></div>
+																</a></span></div>
+													</div>
+												</span><span class="s h g f lm ln">
+													<div class="n o">
+														<div class="s ao km kn ko kp kq"><span><a
+																	class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw"
+																	rel="noopener"
+																	href="/m/signin?actionUrl=https%3A%2F%2Fmedium.com%2F_%2Fvote%2Fp%2Fb44d683f5824&amp;operation=register&amp;redirect=https%3A%2F%2Fmedium.com%2F%40jeikabu%2Fnative-code-in-net-5-0-and-c-9-0-b44d683f5824&amp;user=Jeikabu&amp;userId=b211c0096c86&amp;source=post_actions_footer-----b44d683f5824---------------------clap_footer-----------">
+																	<div class="ce kr ks kt ku kv kw kx r ky kz"><svg
+																			width="25" height="25" viewBox="0 0 25 25"
+																			aria-label="clap">
+																			<g fill-rule="evenodd">
+																				<path
+																					d="M11.74 0l.76 2.97.76-2.97zM14.81 3.78l1.84-2.56-1.42-.47zM8.38 1.22l1.84 2.56L9.8.75zM20.38 21.62a5.11 5.11 0 0 1-3.16 1.61l.49-.45c2.88-2.89 3.45-5.98 1.69-9.21l-1.1-1.94-.96-2.02c-.31-.67-.23-1.18.25-1.55a.84.84 0 0 1 .66-.16c.34.05.66.28.88.6l2.85 5.02c1.18 1.97 1.38 5.12-1.6 8.1M7.1 21.1l-5.02-5.02a1 1 0 0 1 .7-1.7 1 1 0 0 1 .72.3l2.6 2.6a.44.44 0 0 0 .63-.62L4.1 14.04l-1.75-1.75a1 1 0 1 1 1.41-1.41l4.15 4.15a.44.44 0 0 0 .63 0 .44.44 0 0 0 0-.62L4.4 10.26 3.22 9.08a1 1 0 0 1 0-1.4 1.02 1.02 0 0 1 1.41 0l1.18 1.16L9.96 13a.44.44 0 0 0 .62 0 .44.44 0 0 0 0-.63L6.43 8.22a.99.99 0 0 1-.3-.7.99.99 0 0 1 .3-.7 1 1 0 0 1 1.41 0l7 6.98a.44.44 0 0 0 .7-.5l-1.35-2.85c-.31-.68-.23-1.19.25-1.56a.85.85 0 0 1 .66-.16c.34.06.66.28.88.6L18.63 14c1.57 2.88 1.07 5.54-1.55 8.16a5.62 5.62 0 0 1-5.06 1.65 9.35 9.35 0 0 1-4.93-2.72zM11 5.98l2.56 2.56c-.5.6-.56 1.41-.15 2.28l.26.56-4.25-4.25a.98.98 0 0 1-.12-.45 1 1 0 0 1 .29-.7 1.02 1.02 0 0 1 1.41 0zm8.89 2.06c-.38-.56-.9-.92-1.49-1.01a1.74 1.74 0 0 0-1.34.33c-.38.29-.61.65-.71 1.06a2.1 2.1 0 0 0-1.1-.56 1.78 1.78 0 0 0-.99.13l-2.64-2.64a1.88 1.88 0 0 0-2.65 0 1.86 1.86 0 0 0-.48.85 1.89 1.89 0 0 0-2.67-.01 1.87 1.87 0 0 0-.5.9c-.76-.75-2-.75-2.7-.04a1.88 1.88 0 0 0 0 2.66c-.3.12-.61.29-.87.55a1.88 1.88 0 0 0 0 2.66l.62.62a1.88 1.88 0 0 0-.9 3.16l5.01 5.02c1.6 1.6 3.52 2.64 5.4 2.96a7.16 7.16 0 0 0 1.18.1c1.03 0 2-.25 2.9-.7A5.9 5.9 0 0 0 21 22.24c3.34-3.34 3.08-6.93 1.74-9.17l-2.87-5.04z">
+																				</path>
+																			</g>
+																		</svg></div>
+																</a></span></div>
+													</div>
+												</span></div>
+											<div class="s lo lp lq lr ls"></div><button class="ku ks ce">
+												<div class="n o ax">
+													<div class="n o"><svg width="29" height="29" aria-label="responses"
+															class="lb lc ku kz lt">
+															<path
+																d="M21.27 20.06a9.04 9.04 0 0 0 2.75-6.68C24.02 8.21 19.67 4 14.1 4S4 8.21 4 13.38c0 5.18 4.53 9.39 10.1 9.39 1 0 2-.14 2.95-.41.28.25.6.49.92.7a7.46 7.46 0 0 0 4.19 1.3c.27 0 .5-.13.6-.35a.63.63 0 0 0-.05-.65 8.08 8.08 0 0 1-1.29-2.58 5.42 5.42 0 0 1-.15-.75zm-3.85 1.32l-.08-.28-.4.12a9.72 9.72 0 0 1-2.84.43c-4.96 0-9-3.71-9-8.27 0-4.55 4.04-8.26 9-8.26 4.95 0 8.77 3.71 8.77 8.27 0 2.25-.75 4.35-2.5 5.92l-.24.21v.32a5.59 5.59 0 0 0 .21 1.29c.19.7.49 1.4.89 2.08a6.43 6.43 0 0 1-2.67-1.06c-.34-.22-.88-.48-1.16-.74z">
+															</path>
+														</svg></div>
+												</div>
+											</button>
+										</div>
+										<div class="n o">
+											<div class="fy s">
+												<div class="bv" aria-hidden="false"
+													aria-describedby="postFooterSocialMenu"
+													aria-labelledby="postFooterSocialMenu">
+													<div>
+														<div class="bv" role="tooltip" aria-hidden="false"><button
+																class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw"
+																aria-controls="postFooterSocialMenu"
+																aria-expanded="false" aria-label="Share Post"><svg
+																	width="25" height="25" class="r">
+																	<g fill-rule="evenodd">
+																		<path
+																			d="M15.6 5a.42.42 0 0 0 .17-.3.42.42 0 0 0-.12-.33l-2.8-2.79a.5.5 0 0 0-.7 0l-2.8 2.8a.4.4 0 0 0-.1.32c0 .12.07.23.16.3h.02a.45.45 0 0 0 .57-.04l2-2V10c0 .28.23.5.5.5s.5-.22.5-.5V2.93l2.02 2.02c.08.07.18.12.3.13.11.01.21-.02.3-.08v.01">
+																		</path>
+																		<path
+																			d="M18 7h-1.5a.5.5 0 0 0 0 1h1.6c.5 0 .9.4.9.9v10.2c0 .5-.4.9-.9.9H6.9a.9.9 0 0 1-.9-.9V8.9c0-.5.4-.9.9-.9h1.6a.5.5 0 0 0 .35-.15A.5.5 0 0 0 9 7.5a.5.5 0 0 0-.15-.35A.5.5 0 0 0 8.5 7H7a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h11a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2">
+																		</path>
+																	</g>
+																</svg></button></div>
+													</div>
+												</div>
+											</div>
+											<div class="fy s ab"></div>
+										</div>
+									</div>
+								</div>
+								<div class="lu lh s">
+									<ul class="ce cf">
+										<li class="bv lv fz lw"><a href="/tag/dotnet"
+												class="ba b jz lx by ly lz bw s in">Dotnet</a></li>
+										<li class="bv lv fz lw"><a href="/tag/csharp"
+												class="ba b jz lx by ly lz bw s in">Csharp</a></li>
+										<li class="bv lv fz lw"><a href="/tag/performance"
+												class="ba b jz lx by ly lz bw s in">Performance</a></li>
+									</ul>
+								</div>
+								<div class="ma s"></div>
+							</div>
+						</div>
+						<div>
+							<div class="n p">
+								<div class="ap aq ar as at fg av w"></div>
+							</div>
+							<div class="s fx">
+								<div class="mb ki s mc">
+									<div class="n p">
+										<div class="ap aq ar as at fg av w">
+											<div class="n o cj">
+												<h2
+													class="ba hb md me mf hf mg mh mi hj mj mk ml hn mm mn mo hr mp mq mr hv ka kc kd ke kf kg fn">
+													<a class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw"
+														rel="noopener"
+														href="/@jeikabu?source=follow_footer-------------------------------------">More
+														from Jeikabu</a></h2><span><button
+														class="ba b bb bc ju be jv jw bh jx bk bl bm bn jy bq br bs bt bu bv bw">Follow</button></span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="ms s mc fx">
+								<div class="n p">
+									<div class="mt mu mv mw mx my av w"></div>
+								</div>
+							</div>
+							<div class="s ev fx">
+								<div class="n p">
+									<div class="ap aq ar as at au av w">
+										<div class="mz gw s">
+											<div class="na an nb gw s nc nd">
+												<h2 class="ba hb hc he hf hg hi hj hk hm hn ho hq hr hs hu hv fn">More
+													From Medium</h2>
+											</div>
+											<div class="cp n ax ct ne nf ng nh ni nj nk nl nm nn no np nq nr ns">
+												<div
+													class="nt nu nv nw nx ny nz oa ob oc od oe of og oh oi oj ok ol om on">
+													<div class="oo op s">
+														<div class="w oq">
+															<div class="n cj">
+																<div class="s or os ot ou">
+																	<div class="ov s">
+																		<h2
+																			class="ba hb md me hf mg mh hj ow ox hn oy oz hr pa pb hv fn">
+																			<a rel="noopener"
+																				href="/@BolgerCarol/easily-add-a-bit-of-style-with-shadermask-49649f524766?source=post_internal_links---------0----------------------------">Easily
+																				Add A Bit of Style With ShaderMask</a>
+																		</h2>
+																	</div>
+																	<div class="o n">
+																		<div></div>
+																		<div class="w s">
+																			<div class="n">
+																				<div style="flex:1"><span
+																						class="ba b bb bc fn">
+																						<div class="cq n o pc"><span
+																								class="ba b jz bc fn"><a
+																									class="dr ds bz ca cb cc cd ce cf bl pd cg dv dw"
+																									rel="noopener"
+																									href="/@BolgerCarol?source=post_internal_links---------0----------------------------">Carol
+																									Bolger</a></span>
+																						</div>
+																					</span></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="dq fz s pe pf"><a
+																		class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw s"
+																		rel="noopener"
+																		href="/@BolgerCarol/easily-add-a-bit-of-style-with-shadermask-49649f524766?source=post_internal_links---------0----------------------------">
+																		<div class="pj s ao ic">
+																			<div class="pk pl s">
+																				<div
+																					class="eh pg fb ek eg oq w ka ph pi">
+																					<img class="fb ek eg oq w pm pn po"
+																						src="https://miro.medium.com/max/60/1*FiZYYX9OMt0e4VyU97MXmw.png?q=20"
+																						width="70" height="70"
+																						role="presentation" /></div><img
+																					class="eh pg pp pq pr ps pt pu pv pw px py c"
+																					width="70" height="70"
+																					role="presentation" /><noscript><img
+																						class="pp pq pr ps pt pu pv pw px py"
+																						src="https://miro.medium.com/fit/c/140/140/1*FiZYYX9OMt0e4VyU97MXmw.png"
+																						width="70" height="70"
+																						srcSet="https://miro.medium.com/fit/c/96/140/1*FiZYYX9OMt0e4VyU97MXmw.png 48w, https://miro.medium.com/fit/c/140/140/1*FiZYYX9OMt0e4VyU97MXmw.png 70w"
+																						sizes="70px"
+																						role="presentation" /></noscript>
+																			</div>
+																		</div>
+																	</a></div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div
+													class="nt nu nv nw nx ny nz oa ob oc od oe of og oh oi oj ok ol om on">
+													<div class="oo op s">
+														<div class="w oq">
+															<div class="n cj">
+																<div class="s or os ot ou">
+																	<div class="ov s">
+																		<h2
+																			class="ba hb md me hf mg mh hj ow ox hn oy oz hr pa pb hv fn">
+																			<a href="https://adityarama1210.medium.com/golang-mocking-a-function-for-unit-testing-497b43ad3409?source=post_internal_links---------1----------------------------"
+																				rel="noopener">Golang “Mocking” a
+																				Function for Unit Testing</a></h2>
+																	</div>
+																	<div class="o n">
+																		<div></div>
+																		<div class="w s">
+																			<div class="n">
+																				<div style="flex:1"><span
+																						class="ba b bb bc fn">
+																						<div class="cq n o pc"><span
+																								class="ba b jz bc fn"><a
+																									href="https://adityarama1210.medium.com/?source=post_internal_links---------1----------------------------"
+																									class="dr ds bz ca cb cc cd ce cf bl pd cg dv dw"
+																									rel="noopener">Aditya
+																									Rama</a></span>
+																						</div>
+																					</span></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="dq fz s pe pf"><a
+																		href="https://adityarama1210.medium.com/golang-mocking-a-function-for-unit-testing-497b43ad3409?source=post_internal_links---------1----------------------------"
+																		class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw s"
+																		rel="noopener">
+																		<div class="pj s ao ic">
+																			<div class="pk pl s">
+																				<div
+																					class="eh pg fb ek eg oq w ka ph pi">
+																					<img class="fb ek eg oq w pm pn po"
+																						src="https://miro.medium.com/max/60/0*wEuw9aiSnScD509R?q=20"
+																						width="70" height="70"
+																						role="presentation" /></div><img
+																					class="eh pg pp pq pr ps pt pu pv pw px py c"
+																					width="70" height="70"
+																					role="presentation" /><noscript><img
+																						class="pp pq pr ps pt pu pv pw px py"
+																						src="https://miro.medium.com/fit/c/140/140/0*wEuw9aiSnScD509R"
+																						width="70" height="70"
+																						srcSet="https://miro.medium.com/fit/c/96/140/0*wEuw9aiSnScD509R 48w, https://miro.medium.com/fit/c/140/140/0*wEuw9aiSnScD509R 70w"
+																						sizes="70px"
+																						role="presentation" /></noscript>
+																			</div>
+																		</div>
+																	</a></div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div
+													class="nt nu nv nw nx ny nz oa ob oc od oe of og oh oi oj ok ol om on">
+													<div class="oo op s">
+														<div class="w oq">
+															<div class="n cj">
+																<div class="s or os ot ou">
+																	<div class="ov s">
+																		<h2
+																			class="ba hb md me hf mg mh hj ow ox hn oy oz hr pa pb hv fn">
+																			<a rel="noopener"
+																				href="/captech-corner/serverless-framework-vs-cdk-which-one-should-i-use-49b10ddbea0b?source=post_internal_links---------2----------------------------">Serverless
+																				Framework vs CDK, Which One Should I
+																				Use?</a></h2>
+																	</div>
+																	<div class="o n">
+																		<div></div>
+																		<div class="w s">
+																			<div class="n">
+																				<div style="flex:1"><span
+																						class="ba b bb bc fn">
+																						<div class="cq n o pc"><span
+																								class="ba b jz bc fn"><a
+																									class="dr ds bz ca cb cc cd ce cf bl pd cg dv dw"
+																									rel="noopener"
+																									href="/@psvora?source=post_internal_links---------2----------------------------">Parthiv
+																									S Vora</a><span>
+																									<!-- -->in
+																									<!-- --> <a
+																										href="/captech-corner?source=post_internal_links---------2----------------------------"
+																										class="dr ds bz ca cb cc cd ce cf bl pd cg dv dw"
+																										rel="noopener">CapTech
+																										Corner</a>
+																								</span></span></div>
+																					</span></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="dq fz s pe pf"><a
+																		class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw s"
+																		rel="noopener"
+																		href="/captech-corner/serverless-framework-vs-cdk-which-one-should-i-use-49b10ddbea0b?source=post_internal_links---------2----------------------------">
+																		<div class="pj s ao ic">
+																			<div class="pk pl s">
+																				<div
+																					class="eh pg fb ek eg oq w ka ph pi">
+																					<img class="fb ek eg oq w pm pn po"
+																						src="https://miro.medium.com/max/60/1*bXmf9e2pKw7tf31S_r3yFw.jpeg?q=20"
+																						width="70" height="70"
+																						role="presentation" /></div><img
+																					class="eh pg pp pq pr ps pt pu pv pw px py c"
+																					width="70" height="70"
+																					role="presentation" /><noscript><img
+																						class="pp pq pr ps pt pu pv pw px py"
+																						src="https://miro.medium.com/fit/c/140/140/1*bXmf9e2pKw7tf31S_r3yFw.jpeg"
+																						width="70" height="70"
+																						srcSet="https://miro.medium.com/fit/c/96/140/1*bXmf9e2pKw7tf31S_r3yFw.jpeg 48w, https://miro.medium.com/fit/c/140/140/1*bXmf9e2pKw7tf31S_r3yFw.jpeg 70w"
+																						sizes="70px"
+																						role="presentation" /></noscript>
+																			</div>
+																		</div>
+																	</a></div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div
+													class="nt nu nv nw nx ny nz oa ob oc od oe of og oh oi oj ok ol om on">
+													<div class="oo op s">
+														<div class="w oq">
+															<div class="n cj">
+																<div class="s or os ot ou">
+																	<div class="ov s">
+																		<h2
+																			class="ba hb md me hf mg mh hj ow ox hn oy oz hr pa pb hv fn">
+																			<a rel="noopener"
+																				href="/geekculture/python-to-c-a-data-scientists-journey-to-learning-a-new-language-conditions-conditional-49d823258436?source=post_internal_links---------3----------------------------">Python
+																				to C++, A Data Scientist’s Journey to
+																				Learning a New Language — Conditions,
+																				Conditional…</a></h2>
+																	</div>
+																	<div class="o n">
+																		<div></div>
+																		<div class="w s">
+																			<div class="n">
+																				<div style="flex:1"><span
+																						class="ba b bb bc fn">
+																						<div class="cq n o pc"><span
+																								class="ba b jz bc fn"><a
+																									href="https://danielbensonpoe.medium.com/?source=post_internal_links---------3----------------------------"
+																									class="dr ds bz ca cb cc cd ce cf bl pd cg dv dw"
+																									rel="noopener">Daniel
+																									Benson</a><span>
+																									<!-- -->in
+																									<!-- --> <a
+																										href="/geekculture?source=post_internal_links---------3----------------------------"
+																										class="dr ds bz ca cb cc cd ce cf bl pd cg dv dw"
+																										rel="noopener">Geek
+																										Culture</a>
+																								</span></span></div>
+																					</span></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="dq fz s pe pf"><a
+																		class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw s"
+																		rel="noopener"
+																		href="/geekculture/python-to-c-a-data-scientists-journey-to-learning-a-new-language-conditions-conditional-49d823258436?source=post_internal_links---------3----------------------------">
+																		<div class="pj s ao ic">
+																			<div class="pk pl s">
+																				<div
+																					class="eh pg fb ek eg oq w ka ph pi">
+																					<img class="fb ek eg oq w pm pn po"
+																						src="https://miro.medium.com/max/60/1*kysWUKovj5lz96in8jhWDQ.png?q=20"
+																						width="70" height="70"
+																						role="presentation" /></div><img
+																					class="eh pg pp pq pr ps pt pu pv pw px py c"
+																					width="70" height="70"
+																					role="presentation" /><noscript><img
+																						class="pp pq pr ps pt pu pv pw px py"
+																						src="https://miro.medium.com/fit/c/140/140/1*kysWUKovj5lz96in8jhWDQ.png"
+																						width="70" height="70"
+																						srcSet="https://miro.medium.com/fit/c/96/140/1*kysWUKovj5lz96in8jhWDQ.png 48w, https://miro.medium.com/fit/c/140/140/1*kysWUKovj5lz96in8jhWDQ.png 70w"
+																						sizes="70px"
+																						role="presentation" /></noscript>
+																			</div>
+																		</div>
+																	</a></div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div
+													class="nt nu nv nw nx ny nz oa ob oc od oe of og oh oi oj ok ol om on">
+													<div class="oo op s">
+														<div class="w oq">
+															<div class="n cj">
+																<div class="s or os ot ou">
+																	<div class="ov s">
+																		<h2
+																			class="ba hb md me hf mg mh hj ow ox hn oy oz hr pa pb hv fn">
+																			<a href="https://payodatechnologyinc.medium.com/the-cost-of-inadequate-testing-of-software-49dd17e76750?source=post_internal_links---------4----------------------------"
+																				rel="noopener">The Cost of Inadequate
+																				Testing of Software</a></h2>
+																	</div>
+																	<div class="o n">
+																		<div></div>
+																		<div class="w s">
+																			<div class="n">
+																				<div style="flex:1"><span
+																						class="ba b bb bc fn">
+																						<div class="cq n o pc"><span
+																								class="ba b jz bc fn"><a
+																									href="https://payodatechnologyinc.medium.com/?source=post_internal_links---------4----------------------------"
+																									class="dr ds bz ca cb cc cd ce cf bl pd cg dv dw"
+																									rel="noopener">Payoda
+																									Technology
+																									Inc</a></span></div>
+																					</span></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="dq fz s pe pf"><a
+																		href="https://payodatechnologyinc.medium.com/the-cost-of-inadequate-testing-of-software-49dd17e76750?source=post_internal_links---------4----------------------------"
+																		class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw s"
+																		rel="noopener">
+																		<div class="pj s ao ic">
+																			<div class="pk pl s">
+																				<div
+																					class="eh pg fb ek eg oq w ka ph pi">
+																					<img class="fb ek eg oq w pm pn po"
+																						src="https://miro.medium.com/max/60/1*UH2DA2QTd0ykuHie2MfovQ.png?q=20"
+																						width="70" height="70"
+																						role="presentation" /></div><img
+																					class="eh pg pp pq pr ps pt pu pv pw px py c"
+																					width="70" height="70"
+																					role="presentation" /><noscript><img
+																						class="pp pq pr ps pt pu pv pw px py"
+																						src="https://miro.medium.com/fit/c/140/140/1*UH2DA2QTd0ykuHie2MfovQ.png"
+																						width="70" height="70"
+																						srcSet="https://miro.medium.com/fit/c/96/140/1*UH2DA2QTd0ykuHie2MfovQ.png 48w, https://miro.medium.com/fit/c/140/140/1*UH2DA2QTd0ykuHie2MfovQ.png 70w"
+																						sizes="70px"
+																						role="presentation" /></noscript>
+																			</div>
+																		</div>
+																	</a></div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div
+													class="nt nu nv nw nx ny nz oa ob oc od oe of og oh oi oj ok ol om on">
+													<div class="oo op s">
+														<div class="w oq">
+															<div class="n cj">
+																<div class="s or os ot ou">
+																	<div class="ov s">
+																		<h2
+																			class="ba hb md me hf mg mh hj ow ox hn oy oz hr pa pb hv fn">
+																			<a rel="noopener"
+																				href="/swlh/how-to-build-net-webcam-barcode-scanner-with-directshow-49e9edb2e88?source=post_internal_links---------5----------------------------">How
+																				to Build .NET Webcam Barcode Scanner
+																				with DirectShow</a></h2>
+																	</div>
+																	<div class="o n">
+																		<div></div>
+																		<div class="w s">
+																			<div class="n">
+																				<div style="flex:1"><span
+																						class="ba b bb bc fn">
+																						<div class="cq n o pc"><span
+																								class="ba b jz bc fn"><a
+																									href="https://yushulx.medium.com/?source=post_internal_links---------5----------------------------"
+																									class="dr ds bz ca cb cc cd ce cf bl pd cg dv dw"
+																									rel="noopener">Xiao
+																									Ling</a><span>
+																									<!-- -->in
+																									<!-- --> <a
+																										href="/swlh?source=post_internal_links---------5----------------------------"
+																										class="dr ds bz ca cb cc cd ce cf bl pd cg dv dw"
+																										rel="noopener">The
+																										Startup</a>
+																								</span></span></div>
+																					</span></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="dq fz s pe pf"><a
+																		class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw s"
+																		rel="noopener"
+																		href="/swlh/how-to-build-net-webcam-barcode-scanner-with-directshow-49e9edb2e88?source=post_internal_links---------5----------------------------">
+																		<div class="pj s ao ic">
+																			<div class="pk pl s">
+																				<div
+																					class="eh pg fb ek eg oq w ka ph pi">
+																					<img class="fb ek eg oq w pm pn po"
+																						src="https://miro.medium.com/max/60/0*WvrscsdwobWKSldv.png?q=20"
+																						width="70" height="70"
+																						role="presentation" /></div><img
+																					class="eh pg pp pq pr ps pt pu pv pw px py c"
+																					width="70" height="70"
+																					role="presentation" /><noscript><img
+																						class="pp pq pr ps pt pu pv pw px py"
+																						src="https://miro.medium.com/fit/c/140/140/0*WvrscsdwobWKSldv.png"
+																						width="70" height="70"
+																						srcSet="https://miro.medium.com/fit/c/96/140/0*WvrscsdwobWKSldv.png 48w, https://miro.medium.com/fit/c/140/140/0*WvrscsdwobWKSldv.png 70w"
+																						sizes="70px"
+																						role="presentation" /></noscript>
+																			</div>
+																		</div>
+																	</a></div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div
+													class="nt nu nv nw nx ny nz oa ob oc od oe of og oh oi oj ok ol om on">
+													<div class="oo op s">
+														<div class="w oq">
+															<div class="n cj">
+																<div class="s or os ot ou">
+																	<div class="ov s">
+																		<h2
+																			class="ba hb md me hf mg mh hj ow ox hn oy oz hr pa pb hv fn">
+																			<a href="https://chamalwr.medium.com/inside-the-jvm-part-03-classloader-cont-4a146b7c6fd?source=post_internal_links---------6----------------------------"
+																				rel="noopener">Inside the JVM — Part 03
+																				(ClassLoader Cont…)</a></h2>
+																	</div>
+																	<div class="o n">
+																		<div></div>
+																		<div class="w s">
+																			<div class="n">
+																				<div style="flex:1"><span
+																						class="ba b bb bc fn">
+																						<div class="cq n o pc"><span
+																								class="ba b jz bc fn"><a
+																									href="https://chamalwr.medium.com/?source=post_internal_links---------6----------------------------"
+																									class="dr ds bz ca cb cc cd ce cf bl pd cg dv dw"
+																									rel="noopener">Chamal
+																									Weerasinghe</a></span>
+																						</div>
+																					</span></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="dq fz s pe pf"><a
+																		href="https://chamalwr.medium.com/inside-the-jvm-part-03-classloader-cont-4a146b7c6fd?source=post_internal_links---------6----------------------------"
+																		class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw s"
+																		rel="noopener">
+																		<div class="pj s ao ic">
+																			<div class="pk pl s">
+																				<div
+																					class="eh pg fb ek eg oq w ka ph pi">
+																					<img class="fb ek eg oq w pm pn po"
+																						src="https://miro.medium.com/max/60/0*vWIAsrn2PPwy5GTr?q=20"
+																						width="70" height="70"
+																						role="presentation" /></div><img
+																					class="eh pg pp pq pr ps pt pu pv pw px py c"
+																					width="70" height="70"
+																					role="presentation" /><noscript><img
+																						class="pp pq pr ps pt pu pv pw px py"
+																						src="https://miro.medium.com/fit/c/140/140/0*vWIAsrn2PPwy5GTr"
+																						width="70" height="70"
+																						srcSet="https://miro.medium.com/fit/c/96/140/0*vWIAsrn2PPwy5GTr 48w, https://miro.medium.com/fit/c/140/140/0*vWIAsrn2PPwy5GTr 70w"
+																						sizes="70px"
+																						role="presentation" /></noscript>
+																			</div>
+																		</div>
+																	</a></div>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div
+													class="nt nu nv nw nx ny nz oa ob oc od oe of og oh oi oj ok ol om on">
+													<div class="oo op s">
+														<div class="w oq">
+															<div class="n cj">
+																<div class="s or os ot ou">
+																	<div class="ov s">
+																		<h2
+																			class="ba hb md me hf mg mh hj ow ox hn oy oz hr pa pb hv fn">
+																			<a rel="noopener"
+																				href="/@ahamedraaseem/what-is-kubernetes-781ea5a0e8ae?source=post_internal_links---------7----------------------------">What
+																				is Kubernetes?</a></h2>
+																	</div>
+																	<div class="o n">
+																		<div></div>
+																		<div class="w s">
+																			<div class="n">
+																				<div style="flex:1"><span
+																						class="ba b bb bc fn">
+																						<div class="cq n o pc"><span
+																								class="ba b jz bc fn"><a
+																									class="dr ds bz ca cb cc cd ce cf bl pd cg dv dw"
+																									rel="noopener"
+																									href="/@ahamedraaseem?source=post_internal_links---------7----------------------------">Ahamed
+																									Raaseem</a></span>
+																						</div>
+																					</span></div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="dq fz s pe pf"><a
+																		class="dr ds bz ca cb cc cd ce cf bl dt du cg dv dw s"
+																		rel="noopener"
+																		href="/@ahamedraaseem/what-is-kubernetes-781ea5a0e8ae?source=post_internal_links---------7----------------------------">
+																		<div class="pj s ao ic">
+																			<div class="pk pl s">
+																				<div
+																					class="eh pg fb ek eg oq w ka ph pi">
+																					<img class="fb ek eg oq w pm pn po"
+																						src="https://miro.medium.com/max/60/1*8h2uG6X4g-UnWi6cizlw1A.png?q=20"
+																						width="70" height="70"
+																						role="presentation" /></div><img
+																					class="eh pg pp pq pr ps pt pu pv pw px py c"
+																					width="70" height="70"
+																					role="presentation" /><noscript><img
+																						class="pp pq pr ps pt pu pv pw px py"
+																						src="https://miro.medium.com/fit/c/140/140/1*8h2uG6X4g-UnWi6cizlw1A.png"
+																						width="70" height="70"
+																						srcSet="https://miro.medium.com/fit/c/96/140/1*8h2uG6X4g-UnWi6cizlw1A.png 48w, https://miro.medium.com/fit/c/140/140/1*8h2uG6X4g-UnWi6cizlw1A.png 70w"
+																						sizes="70px"
+																						role="presentation" /></noscript>
+																			</div>
+																		</div>
+																	</a></div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="pz s qa qb">
+					<div class="n p">
+						<div class="ap aq ar as at au av w">
+							<div class="n ak">
+								<div class="n o cj"><a
+										href="https://medium.com/?source=post_page-----b44d683f5824--------------------------------"
+										class="dr ds bz ca cb cc cd ce cf bl qc qd cg qe qf" rel="noopener"
+										aria-label="Go to homepage"><svg viewBox="0 0 3940 610" class="jv qg">
+											<path
+												d="M594.79 308.2c0 163.76-131.85 296.52-294.5 296.52S5.8 472 5.8 308.2 137.65 11.69 300.29 11.69s294.5 132.75 294.5 296.51M917.86 308.2c0 154.16-65.93 279.12-147.25 279.12s-147.25-125-147.25-279.12S689.29 29.08 770.61 29.08s147.25 125 147.25 279.12M1050 308.2c0 138.12-23.19 250.08-51.79 250.08s-51.79-112-51.79-250.08 23.19-250.08 51.8-250.08S1050 170.09 1050 308.2M1862.77 37.4l.82-.18v-6.35h-167.48l-155.51 365.5-155.51-365.5h-180.48v6.35l.81.18c30.57 6.9 46.09 17.19 46.09 54.3v434.45c0 37.11-15.58 47.4-46.15 54.3l-.81.18V587H1327v-6.35l-.81-.18c-30.57-6.9-46.09-17.19-46.09-54.3V116.9L1479.87 587h11.33l205.59-483.21V536.9c-2.62 29.31-18 38.36-45.68 44.61l-.82.19v6.3h213.3v-6.3l-.82-.19c-27.71-6.25-43.46-15.3-46.08-44.61l-.14-445.2h.14c0-37.11 15.52-47.4 46.08-54.3m97.43 287.8c3.49-78.06 31.52-134.4 78.56-135.37 14.51.24 26.68 5 36.14 14.16 20.1 19.51 29.55 60.28 28.09 121.21zm-2.11 22h250v-1.05c-.71-59.69-18-106.12-51.34-138-28.82-27.55-71.49-42.71-116.31-42.71h-1c-23.26 0-51.79 5.64-72.09 15.86-23.11 10.7-43.49 26.7-60.45 47.7-27.3 33.83-43.84 79.55-47.86 130.93-.13 1.54-.24 3.08-.35 4.62s-.18 2.92-.25 4.39a332.64 332.64 0 0 0-.36 21.69C1860.79 507 1923.65 600 2035.3 600c98 0 155.07-71.64 169.3-167.8l-7.19-2.53c-25 51.68-69.9 83-121 79.18-69.76-5.22-123.2-75.95-118.35-161.63m532.69 157.68c-8.2 19.45-25.31 30.15-48.24 30.15s-43.89-15.74-58.78-44.34c-16-30.7-24.42-74.1-24.42-125.51 0-107 33.28-176.21 84.79-176.21 21.57 0 38.55 10.7 46.65 29.37zm165.84 76.28c-30.57-7.23-46.09-18-46.09-57V5.28L2424.77 60v6.7l1.14-.09c25.62-2.07 43 1.47 53.09 10.79 7.9 7.3 11.75 18.5 11.75 34.26v71.14c-18.31-11.69-40.09-17.38-66.52-17.38-53.6 0-102.59 22.57-137.92 63.56-36.83 42.72-56.3 101.1-56.3 168.81C2230 518.72 2289.53 600 2378.13 600c51.83 0 93.53-28.4 112.62-76.3V588h166.65v-6.66zm159.29-505.33c0-37.76-28.47-66.24-66.24-66.24-37.59 0-67 29.1-67 66.24s29.44 66.24 67 66.24c37.77 0 66.24-28.48 66.24-66.24m43.84 505.33c-30.57-7.23-46.09-18-46.09-57h-.13V166.65l-166.66 47.85v6.5l1 .09c36.06 3.21 45.93 15.63 45.93 57.77V588h166.8v-6.66zm427.05 0c-30.57-7.23-46.09-18-46.09-57V166.65L3082 212.92v6.52l.94.1c29.48 3.1 38 16.23 38 58.56v226c-9.83 19.45-28.27 31-50.61 31.78-36.23 0-56.18-24.47-56.18-68.9V166.66l-166.66 47.85V221l1 .09c36.06 3.2 45.94 15.62 45.94 57.77v191.27a214.48 214.48 0 0 0 3.47 39.82l3 13.05c14.11 50.56 51.08 77 109 77 49.06 0 92.06-30.37 111-77.89v66h166.66v-6.66zM3934.2 588v-6.67l-.81-.19c-33.17-7.65-46.09-22.07-46.09-51.43v-243.2c0-75.83-42.59-121.09-113.93-121.09-52 0-95.85 30.05-112.73 76.86-13.41-49.6-52-76.86-109.06-76.86-50.12 0-89.4 26.45-106.25 71.13v-69.87l-166.66 45.89v6.54l1 .09c35.63 3.16 45.93 15.94 45.93 57V588h155.5v-6.66l-.82-.2c-26.46-6.22-35-17.56-35-46.66V255.72c7-16.35 21.11-35.72 49-35.72 34.64 0 52.2 24 52.2 71.28V588h155.54v-6.66l-.82-.2c-26.46-6.22-35-17.56-35-46.66v-248a160.45 160.45 0 0 0-2.2-27.68c7.42-17.77 22.34-38.8 51.37-38.8 35.13 0 52.2 23.31 52.2 71.28V588z">
+											</path>
+										</svg></a>
+									<div class="v qh n cj qi cl">
+										<p class="ba b dn do qj"><a
+												href="https://medium.com/about?autoplay=1&amp;source=post_page-----b44d683f5824--------------------------------"
+												class="dr ds bz ca cb cc cd ce cf bl pd cg qe qf"
+												rel="noopener">About</a></p>
+										<p class="ba b dn do qj"><a
+												href="https://help.medium.com/hc/en-us?source=post_page-----b44d683f5824--------------------------------"
+												class="dr ds bz ca cb cc cd ce cf bl pd cg qe qf"
+												rel="noopener">Help</a></p>
+										<p class="ba b dn do qj"><a
+												href="https://policy.medium.com/medium-terms-of-service-9db0094a1e0f?source=post_page-----b44d683f5824--------------------------------"
+												class="dr ds bz ca cb cc cd ce cf bl pd cg qe qf"
+												rel="noopener">Legal</a></p>
+									</div>
+								</div>
+								<div class="al qk ql cl">
+									<p class="ba b dn do qm">Get the Medium app</p>
+								</div>
+								<div class="al qk qn cl qo">
+									<div class="az s"><a
+											href="https://itunes.apple.com/app/medium-everyones-stories/id828256236?pt=698524&amp;mt=8&amp;ct=post_page&amp;source=post_page-----b44d683f5824--------------------------------"
+											class="dr ds bz ca cb cc cd ce cf bl qc qd cg qe qf"
+											rel="noopener nofollow"><img
+												alt="A button that says &#x27;Download on the App Store&#x27;, and if clicked it will lead you to the iOS App store"
+												class=""
+												src="https://miro.medium.com/max/270/1*Crl55Tm6yDNMoucPo1tvDg.png"
+												width="135" height="41" /></a></div>
+									<div class="s"><a
+											href="https://play.google.com/store/apps/details?id=com.medium.reader&amp;source=post_page-----b44d683f5824--------------------------------"
+											class="dr ds bz ca cb cc cd ce cf bl qc qd cg qe qf"
+											rel="noopener nofollow"><img
+												alt="A button that says &#x27;Get it on, Google Play&#x27;, and if clicked it will lead you to the Google Play store"
+												class=""
+												src="https://miro.medium.com/max/270/1*W_RAPQ62h0em559zluJLdQ.png"
+												width="135" height="41" /></a></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>window.__BUILD_ID__ = "main-20210625-220335-3c25551ccd"</script>
+	<script>window.__GRAPHQL_URI__ = "https://medium.com/_/graphql"</script>
+	<script>window.__PRELOADED_STATE__ = { "auroraPage": { "isAuroraPageEnabled": true }, "bookReader": { "assets": {}, "reader": { "currentAsset": null, "currentGFI": null, "settingsPanelIsOpen": false, "settings": { "fontFamily": "CHARTER", "fontScale": "M", "publisherStyling": true, "textAlignment": "start", "theme": "White", "lineSpacing": 0, "wordSpacing": 0, "letterSpacing": 0 }, "internalNavCounter": 0, "currentSelection": null } }, "cache": { "experimentGroupSet": true, "reason": "", "group": "enabled", "tags": ["group-edgeCachePosts", "post-b44d683f5824", "user-b211c0096c86"], "serverVariantState": "2ef95f1beda7a9902170294e488588d2b3118f2c835bc63412e8bdb9e8e88095", "middlewareEnabled": true, "cacheStatus": "DYNAMIC" }, "client": { "hydrated": false, "isUs": false, "isNativeMedium": false, "isSafariMobile": false, "isSafari": false, "routingEntity": { "type": "DEFAULT", "explicit": false } }, "debug": { "requestId": "635cff3c-21d3-4ba4-a142-52542410e73a", "hybridDevServices": [], "showBookReaderDebugger": false, "originalSpanCarrier": { "ot-tracer-spanid": "72c078ca6289547d", "ot-tracer-traceid": "6f8ee2ae4217361b", "ot-tracer-sampled": "true" } }, "multiVote": { "clapsPerPost": {} }, "navigation": { "branch": { "show": null, "hasRendered": null, "blockedByCTA": false }, "hideGoogleOneTap": false, "hasRenderedGoogleOneTap": null, "hasRenderedAlternateUserBanner": null, "currentLocation": "https:\u002F\u002Fmedium.com\u002F@jeikabu\u002Fnative-code-in-net-5-0-and-c-9-0-b44d683f5824", "host": "medium.com", "hostname": "medium.com", "referrer": "", "hasSetReferrer": false, "susiModal": { "step": null, "operation": "register" }, "postRead": false, "queryString": "", "currentHash": "" }, "tracing": {}, "config": { "nodeEnv": "production", "version": "main-20210625-220335-3c25551ccd", "isTaggedVersion": false, "isMediumDotApp": false, "target": "production", "productName": "Medium", "publicUrl": "https:\u002F\u002Fcdn-client.medium.com\u002Flite", "authDomain": "medium.com", "authGoogleClientId": "216296035834-k1k6qe060s2tp2a2jam4ljdcms00sttg.apps.googleusercontent.com", "favicon": "production", "glyphUrl": "https:\u002F\u002Fglyph.medium.com", "branchKey": "key_live_ofxXr2qTrrU9NqURK8ZwEhknBxiI6KBm", "lightStep": { "name": "lite-web", "host": "lightstep.medium.systems", "token": "ce5be895bef60919541332990ac9fef2", "appVersion": "main-20210625-220335-3c25551ccd" }, "algolia": { "appId": "MQ57UUUQZ2", "apiKeySearch": "394474ced050e3911ae2249ecc774921", "indexPrefix": "medium_", "host": "-dsn.algolia.net" }, "recaptchaKey": "6Lfc37IUAAAAAKGGtC6rLS13R1Hrw_BqADfS1LRk", "recaptcha3Key": "6Lf8R9wUAAAAABMI_85Wb8melS7Zj6ziuf99Yot5", "datadog": { "applicationId": "6702d87d-a7e0-42fe-bbcb-95b469547ea0", "clientToken": "pub853ea8d17ad6821d9f8f11861d23dfed", "rumToken": "pubf9cc52896502b9413b68ba36fc0c7162", "context": { "deployment": { "target": "production", "tag": "main-20210625-220335-3c25551ccd", "commit": "3c25551ccd77b570d73938f56934ad8a2f9a0ab3" } }, "datacenter": "us" }, "googleAnalyticsCode": "UA-24232453-2", "googlePay": { "apiVersion": "2", "apiVersionMinor": "0", "merchantId": "BCR2DN6TV7EMTGBM", "merchantName": "Medium" }, "signInWallCustomDomainCollectionIds": ["3a8144eabfe3", "336d898217ee", "61061eb0c96b", "138adf9c44c", "819cc2aaeee0"], "mediumOwnedAndOperatedCollectionIds": ["8a9336e5bb4", "b7e45b22fec3", "193b68bd4fba", "8d6b8a439e32", "54c98c43354d", "3f6ecf56618", "d944778ce714", "92d2092dc598", "ae2a65f35510", "1285ba81cada", "544c7006046e", "fc8964313712", "40187e704f1c", "88d9857e584e", "7b6769f2748b", "bcc38c8f6edf", "cef6983b292", "cb8577c9149e", "444d13b52878", "713d7dbc99b0", "ef8e90590e66", "191186aaafa0", "55760f21cdc5", "9dc80918cc93", "bdc4052bbdba", "8ccfed20cbb2"], "tierOneDomains": ["medium.com", "thebolditalic.com", "arcdigital.media", "towardsdatascience.com", "uxdesign.cc", "codeburst.io", "psiloveyou.xyz", "writingcooperative.com", "entrepreneurshandbook.co", "prototypr.io", "betterhumans.coach.me", "theascent.pub"], "topicsToFollow": ["d61cf867d93f", "8a146bc21b28", "1eca0103fff3", "4d562ee63426", "aef1078a3ef5", "e15e46793f8d", "6158eb913466", "55f1c20aba7a", "3d18b94f6858", "4861fee224fd", "63c6f1f93ee", "1d98b3a9a871", "decb52b64abf", "ae5d4995e225", "830cded25262"], "defaultImages": { "avatar": { "imageId": "1*dmbNkD5D-u45r44go_cf0g.png", "height": 150, "width": 150 }, "orgLogo": { "imageId": "1*OMF3fSqH8t4xBJ9-6oZDZw.png", "height": 106, "width": 545 }, "postLogo": { "imageId": "1*kFrc4tBFM_tCis-2Ic87WA.png", "height": 810, "width": 1440 }, "postPreviewImage": { "imageId": "1*hn4v1tCaJy7cWMyb0bpNpQ.png", "height": 386, "width": 579 } }, "collectionStructuredData": { "8d6b8a439e32": { "name": "Elemental", "data": { "@type": "NewsMediaOrganization", "ethicsPolicy": "https:\u002F\u002Fhelp.medium.com\u002Fhc\u002Fen-us\u002Farticles\u002F360043290473", "logo": { "@type": "ImageObject", "url": "https:\u002F\u002Fcdn-images-1.medium.com\u002Fmax\u002F980\u002F1*9ygdqoKprhwuTVKUM0DLPA@2x.png", "width": 980, "height": 159 } } }, "3f6ecf56618": { "name": "Forge", "data": { "@type": "NewsMediaOrganization", "ethicsPolicy": "https:\u002F\u002Fhelp.medium.com\u002Fhc\u002Fen-us\u002Farticles\u002F360043290473", "logo": { "@type": "ImageObject", "url": "https:\u002F\u002Fcdn-images-1.medium.com\u002Fmax\u002F596\u002F1*uULpIlImcO5TDuBZ6lm7Lg@2x.png", "width": 596, "height": 183 } } }, "ae2a65f35510": { "name": "GEN", "data": { "@type": "NewsMediaOrganization", "ethicsPolicy": "https:\u002F\u002Fhelp.medium.com\u002Fhc\u002Fen-us\u002Farticles\u002F360043290473", "logo": { "@type": "ImageObject", "url": "https:\u002F\u002Fmiro.medium.com\u002Fmax\u002F264\u002F1*RdVZMdvfV3YiZTw6mX7yWA.png", "width": 264, "height": 140 } } }, "88d9857e584e": { "name": "LEVEL", "data": { "@type": "NewsMediaOrganization", "ethicsPolicy": "https:\u002F\u002Fhelp.medium.com\u002Fhc\u002Fen-us\u002Farticles\u002F360043290473", "logo": { "@type": "ImageObject", "url": "https:\u002F\u002Fmiro.medium.com\u002Fmax\u002F540\u002F1*JqYMhNX6KNNb2UlqGqO2WQ.png", "width": 540, "height": 108 } } }, "7b6769f2748b": { "name": "Marker", "data": { "@type": "NewsMediaOrganization", "ethicsPolicy": "https:\u002F\u002Fhelp.medium.com\u002Fhc\u002Fen-us\u002Farticles\u002F360043290473", "logo": { "@type": "ImageObject", "url": "https:\u002F\u002Fcdn-images-1.medium.com\u002Fmax\u002F383\u002F1*haCUs0wF6TgOOvfoY-jEoQ@2x.png", "width": 383, "height": 92 } } }, "444d13b52878": { "name": "OneZero", "data": { "@type": "NewsMediaOrganization", "ethicsPolicy": "https:\u002F\u002Fhelp.medium.com\u002Fhc\u002Fen-us\u002Farticles\u002F360043290473", "logo": { "@type": "ImageObject", "url": "https:\u002F\u002Fmiro.medium.com\u002Fmax\u002F540\u002F1*cw32fIqCbRWzwJaoQw6BUg.png", "width": 540, "height": 123 } } }, "8ccfed20cbb2": { "name": "Zora", "data": { "@type": "NewsMediaOrganization", "ethicsPolicy": "https:\u002F\u002Fhelp.medium.com\u002Fhc\u002Fen-us\u002Farticles\u002F360043290473", "logo": { "@type": "ImageObject", "url": "https:\u002F\u002Fmiro.medium.com\u002Fmax\u002F540\u002F1*tZUQqRcCCZDXjjiZ4bDvgQ.png", "width": 540, "height": 106 } } } }, "embeddedPostIds": { "coronavirus": "cd3010f9d81f" }, "sharedCdcMessaging": { "COVID_APPLICABLE_TAG_SLUGS": [], "COVID_APPLICABLE_TOPIC_NAMES": [], "COVID_APPLICABLE_TOPIC_NAMES_FOR_TOPIC_PAGE": [], "COVID_MESSAGES": { "tierA": { "text": "For more information on the novel coronavirus and Covid-19, visit cdc.gov.", "markups": [{ "start": 66, "end": 73, "href": "https:\u002F\u002Fwww.cdc.gov\u002Fcoronavirus\u002F2019-nCoV" }] }, "tierB": { "text": "Anyone can publish on Medium per our Policies, but we don’t fact-check every story. For more info about the coronavirus, see cdc.gov.", "markups": [{ "start": 37, "end": 45, "href": "https:\u002F\u002Fhelp.medium.com\u002Fhc\u002Fen-us\u002Fcategories\u002F201931128-Policies-Safety" }, { "start": 125, "end": 132, "href": "https:\u002F\u002Fwww.cdc.gov\u002Fcoronavirus\u002F2019-nCoV" }] }, "paywall": { "text": "This article has been made free for everyone, thanks to Medium Members. For more information on the novel coronavirus and Covid-19, visit cdc.gov.", "markups": [{ "start": 56, "end": 70, "href": "https:\u002F\u002Fmedium.com\u002Fmembership" }, { "start": 138, "end": 145, "href": "https:\u002F\u002Fwww.cdc.gov\u002Fcoronavirus\u002F2019-nCoV" }] }, "unbound": { "text": "This article is free for everyone, thanks to Medium Members. For more information on the novel coronavirus and Covid-19, visit cdc.gov.", "markups": [{ "start": 45, "end": 59, "href": "https:\u002F\u002Fmedium.com\u002Fmembership" }, { "start": 127, "end": 134, "href": "https:\u002F\u002Fwww.cdc.gov\u002Fcoronavirus\u002F2019-nCoV" }] } }, "COVID_BANNER_POST_ID_OVERRIDE_WHITELIST": ["3b31a67bff4a"] }, "sharedVoteMessaging": { "TAGS": ["politics", "election-2020", "government", "us-politics", "election", "2020-presidential-race", "trump", "donald-trump", "democrats", "republicans", "congress", "republican-party", "democratic-party", "biden", "joe-biden", "maga"], "TOPICS": ["politics", "election"], "MESSAGE": { "text": "Find out more about the U.S. election results here.", "markups": [{ "start": 46, "end": 50, "href": "https:\u002F\u002Fcookpolitical.com\u002F2020-national-popular-vote-tracker" }] }, "EXCLUDE_POSTS": ["397ef29e3ca5"] }, "embedPostRules": [], "recircOptions": { "v1": { "limit": 3 }, "v2": { "limit": 8 } }, "braintreeClientKey": "production_zjkj96jm_m56f8fqpf7ngnrd4", "paypalClientId": "AXj1G4fotC2GE8KzWX9mSxCH1wmPE3nJglf4Z2ig_amnhvlMVX87otaq58niAg9iuLktVNF_1WCMnN7v", "stripePublishableKey": "pk_live_7FReX44VnNIInZwrIIx6ghjl" }, "session": { "xsrf": "" } }</script>
+	<script>window.__APOLLO_STATE__ = { "ROOT_QUERY": { "__typename": "Query", "meterPost({\"postId\":\"b44d683f5824\",\"postMeteringOptions\":{\"referrer\":\"\",\"sk\":null,\"source\":null}})": { "__ref": "MeteringInfo:{}" }, "postResult({\"id\":\"b44d683f5824\"})": { "__ref": "Post:b44d683f5824" } }, "MeteringInfo:{}": { "__typename": "MeteringInfo", "postIds": [], "maxUnlockCount": 3, "unlocksRemaining": 0 }, "User:b211c0096c86": { "id": "b211c0096c86", "__typename": "User", "customStyleSheet": null, "isSuspended": false, "name": "Jeikabu", "hasCompletedProfile": false, "bio": "", "imageId": "1*dmbNkD5D-u45r44go_cf0g.png", "username": "jeikabu", "customDomainState": null, "isAuroraVisible": true, "mediumMemberAt": 0, "socialStats": { "__typename": "SocialStats", "followerCount": 0, "followingCount": 1, "collectionFollowingCount": 0 }, "hasSubdomain": false, "viewerEdge": { "__ref": "UserViewerEdge:userId:b211c0096c86-viewerId:lo_df46a3a6f648" }, "bookAuthor": null, "allowNotes": true, "newsletterV3": null, "viewerIsUser": false, "twitterScreenName": "", "followedCollections": 0, "atsQualifiedAt": 0 }, "UserViewerEdge:userId:b211c0096c86-viewerId:lo_df46a3a6f648": { "id": "userId:b211c0096c86-viewerId:lo_df46a3a6f648", "__typename": "UserViewerEdge", "createdAt": 0, "lastPostCreatedAt": 0, "isAllowEdsEnabled": false, "isFollowing": false, "catalogsConnection:tabLinkCatalogsConnection(type:LISTS,limit:1)": { "__typename": "CatalogsConnection", "catalogs": [] } }, "Paragraph:b8e957989cdb_0": { "id": "b8e957989cdb_0", "__typename": "Paragraph", "name": "0e83", "text": "A while back we covered working with native assemblies. It’s worth re-reading to familiarize yourself with the problem and prior solutions. There’s been a few new options introduced in .NET Core and .NET 5.0.", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 13, "end": 54, "type": "A", "href": "https:\u002F\u002Frendered-obsolete.github.io\u002F2018\u002F09\u002F09\u002Fnative-assembly.html", "anchorType": "LINK", "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_1": { "id": "b8e957989cdb_1", "__typename": "Paragraph", "name": "7f71", "text": "NativeLibrary", "type": "H4", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [], "dropCapImage": null }, "Paragraph:b8e957989cdb_2": { "id": "b8e957989cdb_2", "__typename": "Paragraph", "name": "ae81", "text": "The NativeLibary static class was introduced in .NET Core 3.0 and makes it easy to use DllImport in a portable way. To call a function nng_alloc() in a native shared library:", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 87, "end": 96, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 135, "end": 146, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 4, "end": 16, "type": "A", "href": "https:\u002F\u002Fdocs.microsoft.com\u002Fen-us\u002Fdotnet\u002Fapi\u002Fsystem.runtime.interopservices.nativelibrary", "anchorType": "LINK", "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_3": { "id": "b8e957989cdb_3", "__typename": "Paragraph", "name": "797b", "text": "\u002F\u002F In `nng.NETCore` managed assembly\nnamespace nng.Native.Basic\n{\n    public sealed class UnsafeNativeMethods\n    {\n        public const string NngDll = \"nng\";\n        \n        [DllImport(NngDll, CallingConvention = CallingConvention.Cdecl)]\n        public static extern IntPtr nng_alloc(UIntPtr size);\n    }\n}\n\n\u002F\u002F In assembly that references `nng.NETCore`\nnamespace benchmarks\n{\n    class Program\n    {\n        static void Main(string[] args) \n        {\n            NativeLibrary.SetDllImportResolver(typeof(nng.Native.Basic.UnsafeNativeMethods).Assembly, DllImportResolver);\n            \u002F\u002F Calling DllImport'd method triggers resolver\n            nng.Native.Basic.UnsafeNativeMethods.nng_alloc(UIntPtr.Zero);\n        }\n\n        static IntPtr DllImportResolver(string libraryName, System.Reflection.Assembly assembly, DllImportSearchPath? searchPath)\n        {\n            \u002F\u002F Load platform-specific unmanaged shared library. e.g.:\n            var path = \"runtimes\u002Fosx-x64\u002Fnative\u002Flibnng.dylib\";\n            return NativeLibrary.Load(path);\n        }\n    }\n}", "type": "PRE", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 0, "end": 1057, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_4": { "id": "b8e957989cdb_4", "__typename": "Paragraph", "name": "d8e3", "text": "None of the mess of calling dlopen() on Mac\u002F*nix or LoadLibrary() on Windows to load a *.so or *.dll, respectively.", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 28, "end": 36, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 52, "end": 65, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_5": { "id": "b8e957989cdb_5", "__typename": "Paragraph", "name": "6ab2", "text": "If DYLD_PRINT_LIBRARIES env variable is set before running the code:", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 3, "end": 23, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_6": { "id": "b8e957989cdb_6", "__typename": "Paragraph", "name": "9ef0", "text": "dyld: loaded: \u003C264EA187-4189-3CE5-82C3-9746FFE68B66\u003E runtimes\u002Fosx-x64\u002Fnative\u002Flibnng.dylib", "type": "PRE", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 0, "end": 89, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_7": { "id": "b8e957989cdb_7", "__typename": "Paragraph", "name": "cc69", "text": "Function Pointers", "type": "H4", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [], "dropCapImage": null }, "Paragraph:b8e957989cdb_8": { "id": "b8e957989cdb_8", "__typename": "Paragraph", "name": "e7f6", "text": ".NET 5.0 and C# 9.0 introduced function pointers as “a performant way to call native functions from C#”.", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 20, "end": 48, "type": "A", "href": "https:\u002F\u002Fdevblogs.microsoft.com\u002Fdotnet\u002Fimprovements-in-native-code-interop-in-net-5-0\u002F", "anchorType": "LINK", "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_9": { "id": "b8e957989cdb_9", "__typename": "Paragraph", "name": "e06c", "text": "public class Pointer\n{\n    public void CallFunctionPointer()\n    {\n        \u002F\u002F Load platform-specific native library\n        var handle = NativeLibrary.Load(\"xxx\");\n        \u002F\u002F Get address of exported symbol\n        var ptr = NativeLibrary.GetExport(handle, \"nng_alloc\");\n        \u002F\u002F Function pointers require `unsafe` context\n        unsafe\n        {\n            var nng_alloc = (delegate* unmanaged[Cdecl]\u003Cnuint, nint\u003E)ptr;\n            \u002F\u002F Call through function pointer\n            nng_alloc(0);\n        }\n    }\n}", "type": "PRE", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 0, "end": 511, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_10": { "id": "b8e957989cdb_10", "__typename": "Paragraph", "name": "51c6", "text": "NativeLibrary.GetExport() returns the address of a symbol exported by a shared library. It effectively replaces calling the native functions GetProcAddress() and dlsym() on Windows and Mac\u002F*nix, respectively.", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 0, "end": 25, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 141, "end": 157, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 162, "end": 169, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 0, "end": 25, "type": "A", "href": "https:\u002F\u002Fdocs.microsoft.com\u002Fen-us\u002Fdotnet\u002Fapi\u002Fsystem.runtime.interopservices.nativelibrary.getexport", "anchorType": "LINK", "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_11": { "id": "b8e957989cdb_11", "__typename": "Paragraph", "name": "20c7", "text": "Function pointers use the funky syntax delegate* unmanaged[Cdecl]\u003Cargs, retval\u003E (detailed here):", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 39, "end": 79, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 90, "end": 94, "type": "A", "href": "https:\u002F\u002Fdocs.microsoft.com\u002Fen-us\u002Fdotnet\u002Fcsharp\u002Flanguage-reference\u002Fproposals\u002Fcsharp-9.0\u002Ffunction-pointers", "anchorType": "LINK", "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_12": { "id": "b8e957989cdb_12", "__typename": "Paragraph", "name": "92e8", "text": "| Part | Description |-|- | delegate* | Reuses delegate keyword and * denotes an unsafe pointer | unmanaged | Either managed or unmanaged depending on the function | [Cdecl] | Optional after managed. One or more comma-separated System.Runtime.CompilerServices.CallConv* values. Here CallConvCdecl | \u003Cargs, retval\u003E | Function signature types- arguments followed by return value (same as System.Func)", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 28, "end": 37, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 47, "end": 55, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 68, "end": 69, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 98, "end": 107, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 117, "end": 124, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 128, "end": 137, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 166, "end": 173, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 191, "end": 198, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 228, "end": 269, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 283, "end": 296, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 299, "end": 313, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 386, "end": 397, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 47, "end": 55, "type": "A", "href": "https:\u002F\u002Fdocs.microsoft.com\u002Fen-us\u002Fdotnet\u002Fcsharp\u002Fprogramming-guide\u002Fdelegates\u002F", "anchorType": "LINK", "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 228, "end": 269, "type": "A", "href": "https:\u002F\u002Fdocs.microsoft.com\u002Fen-us\u002Fdotnet\u002Fapi\u002Fsystem.runtime.compilerservices", "anchorType": "LINK", "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 283, "end": 296, "type": "A", "href": "https:\u002F\u002Fdocs.microsoft.com\u002Fen-us\u002Fdotnet\u002Fapi\u002Fsystem.runtime.compilerservices.callconvcdecl", "anchorType": "LINK", "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 386, "end": 397, "type": "A", "href": "https:\u002F\u002Fdocs.microsoft.com\u002Fen-us\u002Fdotnet\u002Fapi\u002Fsystem.func-2", "anchorType": "LINK", "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_13": { "id": "b8e957989cdb_13", "__typename": "Paragraph", "name": "f546", "text": "Comparison", "type": "H4", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [], "dropCapImage": null }, "Paragraph:b8e957989cdb_14": { "id": "b8e957989cdb_14", "__typename": "Paragraph", "name": "1931", "text": "A post on medium compared the performance of different interop approaches a few years ago. We can re-run the same comparison passing arguments by-value with .NET 5.0 using BenchmarkDotNet.", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 2, "end": 16, "type": "A", "href": "https:\u002F\u002Fmedium.com\u002F@jarl.gullberg\u002Fan-introduction-to-adl-or-how-to-double-your-native-net-interop-performance-c008e4da54db", "anchorType": "LINK", "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 172, "end": 187, "type": "A", "href": "https:\u002F\u002Fgithub.com\u002Fdotnet\u002FBenchmarkDotNet", "anchorType": "LINK", "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_15": { "id": "b8e957989cdb_15", "__typename": "Paragraph", "name": "7ae8", "text": "nng_aio_set_output(null, 9, null) should be a reasonable choice to benchmark native interop performance because for values greater than 3 it immediately returns EINVAL.", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 0, "end": 33, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 161, "end": 167, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 112, "end": 167, "type": "A", "href": "https:\u002F\u002Fgithub.com\u002Fnanomsg\u002Fnng\u002Fblob\u002F7a0de1b25287f08b73c04d4f9c2834ae265cc382\u002Fsrc\u002Fnng.c#L1821", "anchorType": "LINK", "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 136, "end": 137, "type": "STRONG", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_16": { "id": "b8e957989cdb_16", "__typename": "Paragraph", "name": "2a9f", "text": "The results on a 2019 13\" MacBook Pro with Quad-core i5 @ 2.4 GHz, 16 GB RAM, running macOS Big Sur (11.3), and .NET 5.0.101:", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [], "dropCapImage": null }, "Paragraph:b8e957989cdb_17": { "id": "b8e957989cdb_17", "__typename": "Paragraph", "name": "9e8d", "text": "| Method | Mean | Error | StdDev | Ratio | RatioSD | | — — — — — — — — — — — — — | — — — — — :| — — — — — :| — — — — — :| — — — :| — — — — :| | CallDelegate | 16.989 ns | 0.3568 ns | 0.3163 ns | 13.01 | 0.74 | | CallDllImport | 7.184 ns | 0.1639 ns | 0.1279 ns | 5.49 | 0.22 | | CallInterfaceToDllImport | 10.939 ns | 0.3972 ns | 1.1711 ns | 8.07 | 0.75 | | CallFunctionPointer | 6.733 ns | 0.1613 ns | 0.2208 ns | 5.22 | 0.30 | | CallManaged | 1.305 ns | 0.0548 ns | 0.0563 ns | 1.00 | 0.00 |", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [], "dropCapImage": null }, "Paragraph:b8e957989cdb_18": { "id": "b8e957989cdb_18", "__typename": "Paragraph", "name": "48b4", "text": "Looking at CallDllImport and CallFunctionPointer, function pointers are ~5–10% faster than DllImport.", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 91, "end": 100, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 11, "end": 24, "type": "EM", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 29, "end": 48, "type": "EM", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_19": { "id": "b8e957989cdb_19", "__typename": "Paragraph", "name": "8427", "text": "CallDelegate uses Marshal.GetFunctionPointerForDelegate to call via a managed delegate. Similar to before, it's slowest by a sizeable margin.", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 78, "end": 86, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 18, "end": 55, "type": "A", "href": "https:\u002F\u002Fdocs.microsoft.com\u002Fen-us\u002Fdotnet\u002Fapi\u002Fsystem.runtime.interopservices.marshal.getfunctionpointerfordelegate", "anchorType": "LINK", "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 0, "end": 12, "type": "EM", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_20": { "id": "b8e957989cdb_20", "__typename": "Paragraph", "name": "7606", "text": "CallInterfaceToDllImport is the way we’re currently calling native functions in nng.NET; through an interface to static functions decorated with DllImport. Based on these results, leveraging NativeLibrary and function pointers we can reduce interop overhead by ~33%. Not too shabby.", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 100, "end": 109, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 145, "end": 154, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 191, "end": 204, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 80, "end": 87, "type": "A", "href": "https:\u002F\u002Fgithub.com\u002Fjeikabu\u002Fnng.NETCore", "anchorType": "LINK", "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 0, "end": 24, "type": "EM", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_21": { "id": "b8e957989cdb_21", "__typename": "Paragraph", "name": "aa65", "text": "To see what’s going on, we can use ILSpy via the VSCode plugin to decompile the assembly. Open the Command Palette (CMD+SHIFT+E), run \"ILSpy: Decompile IL Assembly (pick file)\", and select the desired assembly\u002F*.dll. In the Explorer View (CMD+SHIFT+E), browse to ILSPY DECOMPILED MEMBERS \u003E benchmarks \u003E Pointer \u003E CallFunctionPointer:", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 116, "end": 127, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 239, "end": 250, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 35, "end": 40, "type": "A", "href": "https:\u002F\u002Fgithub.com\u002Ficsharpcode\u002FILSpy", "anchorType": "LINK", "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 49, "end": 62, "type": "A", "href": "https:\u002F\u002Fmarketplace.visualstudio.com\u002Fitems?itemName=icsharpcode.ilspy-vscode", "anchorType": "LINK", "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 263, "end": 332, "type": "STRONG", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 99, "end": 114, "type": "EM", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 224, "end": 237, "type": "EM", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_22": { "id": "b8e957989cdb_22", "__typename": "Paragraph", "name": "a69e", "text": "IL_0000: ldarg.0\n\tIL_0001: ldfld method int32 *(native int, uint32, native int) benchmarks.Pointer::nng_aio_set_output \u002F* 04000003 *\u002F\n\tIL_0006: stloc.1\n\tIL_0007: ldsfld native int [System.Runtime]System.IntPtr::Zero \u002F* 0A000015 *\u002F\n\tIL_000c: ldc.i4.s 9\n\tIL_000e: ldsfld native int [System.Runtime]System.IntPtr::Zero \u002F* 0A000015 *\u002F\n\tIL_0013: ldloc.1\n\tIL_0014: calli unmanaged cdecl int32(native int, uint32, native int) \u002F* 11000004 *\u002F\n\tIL_0019: stloc.0\n\tIL_001a: ret", "type": "PRE", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 0, "end": 465, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_23": { "id": "b8e957989cdb_23", "__typename": "Paragraph", "name": "7108", "text": "And the decompiled source:", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [], "dropCapImage": null }, "Paragraph:b8e957989cdb_24": { "id": "b8e957989cdb_24", "__typename": "Paragraph", "name": "507b", "text": "public unsafe void CallFunctionPointer()\n{\n\tIntPtr intPtr = nng_aio_set_output;\n\tint num = ((delegate* cdecl\u003CIntPtr, uint, IntPtr, int\u003E)intPtr)(IntPtr.Zero, 9u, IntPtr.Zero);\n}", "type": "PRE", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 0, "end": 176, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_25": { "id": "b8e957989cdb_25", "__typename": "Paragraph", "name": "2b6a", "text": "So, for whatever reason it turns our function pointer into an IntPtr and then casts it to cdecl (which must be an internal symbol because we can't use it). But the key thing is the use of calli. Compare that with benchmarks \u003E DllImport \u003E CallDllImport:", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 62, "end": 68, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 90, "end": 95, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 188, "end": 193, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 213, "end": 251, "type": "STRONG", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_26": { "id": "b8e957989cdb_26", "__typename": "Paragraph", "name": "18e1", "text": "IL_0000: ldsfld valuetype [nng.NET.Shared]nng.Native.nng_aio [nng.NET.Shared]nng.Native.nng_aio::Null \u002F* 0A000014 *\u002F\n\tIL_0005: ldc.i4.s 9\n\tIL_0007: ldsfld native int [System.Runtime]System.IntPtr::Zero \u002F* 0A000015 *\u002F\n\tIL_000c: call int32 [nng.NET]nng.Native.Aio.UnsafeNativeMethods::nng_aio_set_output(valuetype [nng.NET.Shared]nng.Native.nng_aio, uint32, native int) \u002F* 0A00001C *\u002F\n\tIL_0011: stloc.0\n\tIL_0012: ret", "type": "PRE", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 0, "end": 414, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_27": { "id": "b8e957989cdb_27", "__typename": "Paragraph", "name": "e2a2", "text": "DllImport uses call. Based on the docs for call and calli opcodes, call uses a \"method descriptor\" that is a \"metadata token\" (and works with virtual functions) while calli is just \"a pointer to an entry point\"- and apparently faster.", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 0, "end": 9, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 15, "end": 19, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 67, "end": 71, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 167, "end": 172, "type": "CODE", "href": null, "anchorType": null, "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 43, "end": 47, "type": "A", "href": "https:\u002F\u002Fdocs.microsoft.com\u002Fen-us\u002Fdotnet\u002Fapi\u002Fsystem.reflection.emit.opcodes.call", "anchorType": "LINK", "userId": null, "linkMetadata": null }, { "__typename": "Markup", "start": 52, "end": 57, "type": "A", "href": "https:\u002F\u002Fdocs.microsoft.com\u002Fen-us\u002Fdotnet\u002Fapi\u002Fsystem.reflection.emit.opcodes.calli", "anchorType": "LINK", "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_28": { "id": "b8e957989cdb_28", "__typename": "Paragraph", "name": "a25c", "text": "Additional reading:", "type": "P", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [], "dropCapImage": null }, "Paragraph:b8e957989cdb_29": { "id": "b8e957989cdb_29", "__typename": "Paragraph", "name": "340a", "text": "Understanding System.Runtime.Loader.AssemblyLoadContext", "type": "ULI", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 0, "end": 55, "type": "A", "href": "https:\u002F\u002Fdocs.microsoft.com\u002Fen-us\u002Fdotnet\u002Fcore\u002Fdependency-loading\u002Funderstanding-assemblyloadcontext", "anchorType": "LINK", "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Paragraph:b8e957989cdb_30": { "id": "b8e957989cdb_30", "__typename": "Paragraph", "name": "e6f6", "text": "Unmanaged (native) library loading algorithm", "type": "ULI", "href": null, "layout": null, "metadata": null, "hasDropCap": null, "iframe": null, "mixtapeMetadata": null, "markups": [{ "__typename": "Markup", "start": 0, "end": 44, "type": "A", "href": "https:\u002F\u002Fdocs.microsoft.com\u002Fen-us\u002Fdotnet\u002Fcore\u002Fdependency-loading\u002Floading-unmanaged", "anchorType": "LINK", "userId": null, "linkMetadata": null }], "dropCapImage": null }, "Tag:dotnet": { "id": "dotnet", "__typename": "Tag", "displayTitle": "Dotnet", "normalizedTagSlug": "" }, "Tag:csharp": { "id": "csharp", "__typename": "Tag", "displayTitle": "Csharp", "normalizedTagSlug": "" }, "Tag:performance": { "id": "performance", "__typename": "Tag", "displayTitle": "Performance", "normalizedTagSlug": "" }, "ImageMetadata:": { "id": "", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null, "originalHeight": null, "originalWidth": null }, "ImageMetadata:1*XTeVcjVWPO2TIZHgQcAZqQ.jpeg": { "id": "1*XTeVcjVWPO2TIZHgQcAZqQ.jpeg", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "Collection:24d8f4fa8912": { "id": "24d8f4fa8912", "__typename": "Collection", "name": "Nerd For Tech", "domain": null, "slug": "nerd-for-tech" }, "User:2678856f3e8e": { "id": "2678856f3e8e", "__typename": "User", "name": "Simon Prickett", "username": "simonprickett", "bio": "Software Professional, builder of things with Arduino and Raspberry Pi.", "imageId": "1*V4FXzSWunEUTmhRUGemvww@2x.jpeg", "mediumMemberAt": 0, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "simonprickett.medium.com" } }, "hasSubdomain": true }, "Post:c03da0befdb4": { "id": "c03da0befdb4", "__typename": "Post", "title": "The M5Stack Core Ink Pomodoro Timer", "mediumUrl": "https:\u002F\u002Fmedium.com\u002Fnerd-for-tech\u002Fthe-m5stack-core-ink-pomodoro-timer-c03da0befdb4", "previewImage": { "__ref": "ImageMetadata:1*XTeVcjVWPO2TIZHgQcAZqQ.jpeg" }, "isPublished": true, "firstPublishedAt": 1623008162990, "readingTime": 3.8738993710691823, "statusForCollection": "APPROVED", "isLocked": true, "visibility": "LOCKED", "collection": { "__ref": "Collection:24d8f4fa8912" }, "creator": { "__ref": "User:2678856f3e8e" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:1*eZBub9GKLTwloZ3joV2ZGA.jpeg": { "id": "1*eZBub9GKLTwloZ3joV2ZGA.jpeg", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "User:3cd911c4f12d": { "id": "3cd911c4f12d", "__typename": "User", "name": "Peter Zhou", "username": "peter-zhou", "bio": "Chief Scientist @ VeChain", "imageId": "2*DaTu0S1Mpkb47xUZ9sO0Sg.jpeg", "mediumMemberAt": 1555543766925, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "peter-zhou.medium.com" } }, "hasSubdomain": true }, "Post:c06a7a8bfcc9": { "id": "c06a7a8bfcc9", "__typename": "Post", "title": "Writing TS Code for Testing Smart Contracts on VeChainThor", "mediumUrl": "https:\u002F\u002Fpeter-zhou.medium.com\u002Fwriting-ts-code-for-testing-smart-contracts-on-vechainthor-c06a7a8bfcc9", "previewImage": { "__ref": "ImageMetadata:1*eZBub9GKLTwloZ3joV2ZGA.jpeg" }, "isPublished": true, "firstPublishedAt": 1620625521075, "readingTime": 4.0150943396226415, "statusForCollection": null, "isLocked": false, "visibility": "PUBLIC", "collection": null, "creator": { "__ref": "User:3cd911c4f12d" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:1*xO-PamrTtEqViPE4SkU4Fg.png": { "id": "1*xO-PamrTtEqViPE4SkU4Fg.png", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "User:91cbd7ab53da": { "id": "91cbd7ab53da", "__typename": "User", "name": "Thomas Scherer", "username": "thomas-scherer", "bio": "", "imageId": "1*tE334Hs2FJklQehSCVr4UA@2x.jpeg", "mediumMemberAt": 0, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "thomas-scherer.medium.com" } }, "hasSubdomain": true }, "Post:c09e116e4f07": { "id": "c09e116e4f07", "__typename": "Post", "title": "Gravitee.io API management", "mediumUrl": "https:\u002F\u002Fthomas-scherer.medium.com\u002Fgravitee-io-api-management-c09e116e4f07", "previewImage": { "__ref": "ImageMetadata:1*xO-PamrTtEqViPE4SkU4Fg.png" }, "isPublished": true, "firstPublishedAt": 1617521482660, "readingTime": 10.374528301886793, "statusForCollection": null, "isLocked": false, "visibility": "PUBLIC", "collection": null, "creator": { "__ref": "User:91cbd7ab53da" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:1*mzm4oPoNXarjoEUZ0ApUxg.png": { "id": "1*mzm4oPoNXarjoEUZ0ApUxg.png", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "User:cd2bc6a4189": { "id": "cd2bc6a4189", "__typename": "User", "name": "Ritesh Singh", "username": "rootritesh", "bio": "DevOps\u002FCloud Enthusiast", "imageId": "1*O3PDzTBW7auqiUMLrR3kjQ.jpeg", "mediumMemberAt": 0, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "rootritesh.medium.com" } }, "hasSubdomain": true }, "Post:f17715ca132b": { "id": "f17715ca132b", "__typename": "Post", "title": "DevOps_Project", "mediumUrl": "https:\u002F\u002Frootritesh.medium.com\u002Fdevops-project-f17715ca132b", "previewImage": { "__ref": "ImageMetadata:1*mzm4oPoNXarjoEUZ0ApUxg.png" }, "isPublished": true, "firstPublishedAt": 1600772653007, "readingTime": 8.15566037735849, "statusForCollection": null, "isLocked": true, "visibility": "LOCKED", "collection": null, "creator": { "__ref": "User:cd2bc6a4189" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:1*jsyM9COYU7WemlKvqV2GrQ.jpeg": { "id": "1*jsyM9COYU7WemlKvqV2GrQ.jpeg", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "User:33da4102d59c": { "id": "33da4102d59c", "__typename": "User", "name": "Hafiq Iqmal", "username": "hafiqiqmal93", "bio": "Software Engineer at Teratotech.com", "imageId": "1*BknUhbGmMg8Jt4hkCh8mcQ.png", "mediumMemberAt": 0, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "hafiqiqmal93.medium.com" } }, "hasSubdomain": true }, "Post:f194f624cb06": { "id": "f194f624cb06", "__typename": "Post", "title": "Tips to speed up database query in Laravel", "mediumUrl": "https:\u002F\u002Fhafiqiqmal93.medium.com\u002Ftips-to-speed-up-database-query-in-laravel-f194f624cb06", "previewImage": { "__ref": "ImageMetadata:1*jsyM9COYU7WemlKvqV2GrQ.jpeg" }, "isPublished": true, "firstPublishedAt": 1614096075758, "readingTime": 7.281132075471699, "statusForCollection": null, "isLocked": true, "visibility": "LOCKED", "collection": null, "creator": { "__ref": "User:33da4102d59c" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:1*V9wKtNDtZAJe9TodG3S-Eg.png": { "id": "1*V9wKtNDtZAJe9TodG3S-Eg.png", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "User:10727a0f02a7": { "id": "10727a0f02a7", "__typename": "User", "name": "Grigor Khachatryan", "username": "grigorkh", "bio": "https:\u002F\u002Ftwitter.com\u002FGrigorkh", "imageId": "0*UcGmE29sDaZGE_F9.jpg", "mediumMemberAt": 1541750400000, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "grigorkh.medium.com" } }, "hasSubdomain": true }, "Post:f1b99845959e": { "id": "f1b99845959e", "__typename": "Post", "title": "How to Install Docker on Ubuntu 20.04", "mediumUrl": "https:\u002F\u002Fgrigorkh.medium.com\u002Fhow-to-install-docker-on-ubuntu-20-04-f1b99845959e", "previewImage": { "__ref": "ImageMetadata:1*V9wKtNDtZAJe9TodG3S-Eg.png" }, "isPublished": true, "firstPublishedAt": 1588502703851, "readingTime": 2.958490566037736, "statusForCollection": null, "isLocked": true, "visibility": "LOCKED", "collection": null, "creator": { "__ref": "User:10727a0f02a7" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:1*mGDBV5yOm6u8B3y2TI1nrg.jpeg": { "id": "1*mGDBV5yOm6u8B3y2TI1nrg.jpeg", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "Collection:f5af2b715248": { "id": "f5af2b715248", "__typename": "Collection", "name": "The Startup", "domain": null, "slug": "swlh" }, "User:f7032cde20de": { "id": "f7032cde20de", "__typename": "User", "name": "Siw Grinaker", "username": "siw-grinaker", "bio": "Community Manager @enonichq . Author at enonic.com\u002Fblog. Passionate about web development, community and wave surfing. 🏄‍♀️ Mother of three, enough said!", "imageId": "1*94IHalgnlWP7VUXorjED3Q.jpeg", "mediumMemberAt": 0, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "siw-grinaker.medium.com" } }, "hasSubdomain": true }, "Post:f1e80b0f5c69": { "id": "f1e80b0f5c69", "__typename": "Post", "title": "Front-end frameworks: What is important right now?", "mediumUrl": "https:\u002F\u002Fmedium.com\u002Fswlh\u002Ffront-end-frameworks-what-is-important-right-now-f1e80b0f5c69", "previewImage": { "__ref": "ImageMetadata:1*mGDBV5yOm6u8B3y2TI1nrg.jpeg" }, "isPublished": true, "firstPublishedAt": 1565755200000, "readingTime": 4.073899371069182, "statusForCollection": "APPROVED", "isLocked": true, "visibility": "LOCKED", "collection": { "__ref": "Collection:f5af2b715248" }, "creator": { "__ref": "User:f7032cde20de" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:1*QfhqFD3VqeidhL5j69vlFg.png": { "id": "1*QfhqFD3VqeidhL5j69vlFg.png", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "User:8b9c86a01b80": { "id": "8b9c86a01b80", "__typename": "User", "name": "Diego", "username": "diegormn62", "bio": "", "imageId": "1*1KlJj7DCD-2bEnSRxCFlJA.jpeg", "mediumMemberAt": 0, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "diegormn62.medium.com" } }, "hasSubdomain": true }, "Post:f1ed469e9be": { "id": "f1ed469e9be", "__typename": "Post", "title": "First Real World Experience", "mediumUrl": "https:\u002F\u002Fdiegormn62.medium.com\u002Ffirst-real-world-experience-f1ed469e9be", "previewImage": { "__ref": "ImageMetadata:1*QfhqFD3VqeidhL5j69vlFg.png" }, "isPublished": true, "firstPublishedAt": 1622137153047, "readingTime": 4.416981132075471, "statusForCollection": null, "isLocked": false, "visibility": "PUBLIC", "collection": null, "creator": { "__ref": "User:8b9c86a01b80" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "PostViewerEdge:postId:b44d683f5824-viewerId:lo_df46a3a6f648": { "id": "postId:b44d683f5824-viewerId:lo_df46a3a6f648", "__typename": "PostViewerEdge", "readingList": "READING_LIST_NONE", "catalogsConnection": { "__typename": "EntityCatalogsConnection", "catalogsContainingThis({\"type\":\"LISTS\"})": [], "predefinedContainingThis": [] } }, "Post:b44d683f5824": { "id": "b44d683f5824", "__typename": "Post", "creator": { "__ref": "User:b211c0096c86" }, "canonicalUrl": "https:\u002F\u002Frendered-obsolete.github.io\u002F2021\u002F05\u002F03\u002Fdotnet_calli.html", "collection": null, "content({\"postMeteringOptions\":{\"referrer\":\"\",\"sk\":null,\"source\":null}})": { "__typename": "PostContent", "isLockedPreviewOnly": false, "validatedShareKey": "", "bodyModel": { "__typename": "RichText", "paragraphs": [{ "__ref": "Paragraph:b8e957989cdb_0" }, { "__ref": "Paragraph:b8e957989cdb_1" }, { "__ref": "Paragraph:b8e957989cdb_2" }, { "__ref": "Paragraph:b8e957989cdb_3" }, { "__ref": "Paragraph:b8e957989cdb_4" }, { "__ref": "Paragraph:b8e957989cdb_5" }, { "__ref": "Paragraph:b8e957989cdb_6" }, { "__ref": "Paragraph:b8e957989cdb_7" }, { "__ref": "Paragraph:b8e957989cdb_8" }, { "__ref": "Paragraph:b8e957989cdb_9" }, { "__ref": "Paragraph:b8e957989cdb_10" }, { "__ref": "Paragraph:b8e957989cdb_11" }, { "__ref": "Paragraph:b8e957989cdb_12" }, { "__ref": "Paragraph:b8e957989cdb_13" }, { "__ref": "Paragraph:b8e957989cdb_14" }, { "__ref": "Paragraph:b8e957989cdb_15" }, { "__ref": "Paragraph:b8e957989cdb_16" }, { "__ref": "Paragraph:b8e957989cdb_17" }, { "__ref": "Paragraph:b8e957989cdb_18" }, { "__ref": "Paragraph:b8e957989cdb_19" }, { "__ref": "Paragraph:b8e957989cdb_20" }, { "__ref": "Paragraph:b8e957989cdb_21" }, { "__ref": "Paragraph:b8e957989cdb_22" }, { "__ref": "Paragraph:b8e957989cdb_23" }, { "__ref": "Paragraph:b8e957989cdb_24" }, { "__ref": "Paragraph:b8e957989cdb_25" }, { "__ref": "Paragraph:b8e957989cdb_26" }, { "__ref": "Paragraph:b8e957989cdb_27" }, { "__ref": "Paragraph:b8e957989cdb_28" }, { "__ref": "Paragraph:b8e957989cdb_29" }, { "__ref": "Paragraph:b8e957989cdb_30" }], "sections": [{ "__typename": "Section", "name": "d1ae", "startIndex": 0, "textLayout": null, "imageLayout": null, "backgroundImage": null, "videoLayout": null, "backgroundVideo": null }] } }, "customStyleSheet": null, "firstPublishedAt": 1624022854377, "isLocked": false, "isPublished": true, "isShortform": false, "layerCake": 0, "primaryTopic": null, "title": "Native Code in .NET 5.0 and C# 9.0", "isMarkedPaywallOnly": false, "mediumUrl": "https:\u002F\u002Fmedium.com\u002F@jeikabu\u002Fnative-code-in-net-5-0-and-c-9-0-b44d683f5824", "isLimitedState": false, "visibility": "PUBLIC", "license": "ALL_RIGHTS_RESERVED", "allowResponses": true, "newsletterId": "", "sequence": null, "tags": [{ "__ref": "Tag:dotnet" }, { "__ref": "Tag:csharp" }, { "__ref": "Tag:performance" }], "topics": [{ "__typename": "Topic", "topicId": "decb52b64abf", "name": "Programming" }], "inResponseToPostResult": null, "isNewsletter": false, "socialTitle": "", "socialDek": "", "noIndex": null, "curationStatus": null, "metaDescription": "", "latestPublishedAt": 1624022854377, "readingTime": 3.4037735849056605, "previewContent": { "__typename": "PreviewContent", "subtitle": "" }, "previewImage": { "__ref": "ImageMetadata:" }, "clapCount": 0, "isSuspended": false, "pendingCollection": null, "statusForCollection": null, "lockedSource": "LOCKED_POST_SOURCE_NONE", "pinnedAt": 0, "pinnedByCreatorAt": 0, "curationEligibleAt": 0, "responseDistribution": "NOT_DISTRIBUTED", "internalLinks({\"paging\":{\"limit\":8}})": { "__typename": "InternalLinksConnection", "items": [{ "__ref": "Post:49649f524766" }, { "__ref": "Post:497b43ad3409" }, { "__ref": "Post:49b10ddbea0b" }, { "__ref": "Post:49d823258436" }, { "__ref": "Post:49dd17e76750" }, { "__ref": "Post:49e9edb2e88" }, { "__ref": "Post:4a146b7c6fd" }, { "__ref": "Post:781ea5a0e8ae" }] }, "viewerEdge": { "__ref": "PostViewerEdge:postId:b44d683f5824-viewerId:lo_df46a3a6f648" }, "collaborators": [], "translationSourcePost": null, "inResponseToMediaResource": null, "audioVersionUrl": "", "seoTitle": "", "updatedAt": 1624022857043, "shortformType": "SHORTFORM_TYPE_LINK", "structuredData": "", "seoDescription": "", "isIndexable": false, "postResponses": { "__typename": "PostResponses", "count": 0 }, "latestPublishedVersion": "b8e957989cdb", "isPublishToEmail": false, "voterCount": 0, "recommenders": [], "content({})": { "__typename": "PostContent", "isLockedPreviewOnly": false, "validatedShareKey": "", "bodyModel": { "__typename": "RichText", "paragraphs": [{ "__ref": "Paragraph:b8e957989cdb_0" }, { "__ref": "Paragraph:b8e957989cdb_1" }, { "__ref": "Paragraph:b8e957989cdb_2" }, { "__ref": "Paragraph:b8e957989cdb_3" }, { "__ref": "Paragraph:b8e957989cdb_4" }, { "__ref": "Paragraph:b8e957989cdb_5" }, { "__ref": "Paragraph:b8e957989cdb_6" }, { "__ref": "Paragraph:b8e957989cdb_7" }, { "__ref": "Paragraph:b8e957989cdb_8" }, { "__ref": "Paragraph:b8e957989cdb_9" }, { "__ref": "Paragraph:b8e957989cdb_10" }, { "__ref": "Paragraph:b8e957989cdb_11" }, { "__ref": "Paragraph:b8e957989cdb_12" }, { "__ref": "Paragraph:b8e957989cdb_13" }, { "__ref": "Paragraph:b8e957989cdb_14" }, { "__ref": "Paragraph:b8e957989cdb_15" }, { "__ref": "Paragraph:b8e957989cdb_16" }, { "__ref": "Paragraph:b8e957989cdb_17" }, { "__ref": "Paragraph:b8e957989cdb_18" }, { "__ref": "Paragraph:b8e957989cdb_19" }, { "__ref": "Paragraph:b8e957989cdb_20" }, { "__ref": "Paragraph:b8e957989cdb_21" }, { "__ref": "Paragraph:b8e957989cdb_22" }, { "__ref": "Paragraph:b8e957989cdb_23" }, { "__ref": "Paragraph:b8e957989cdb_24" }, { "__ref": "Paragraph:b8e957989cdb_25" }, { "__ref": "Paragraph:b8e957989cdb_26" }, { "__ref": "Paragraph:b8e957989cdb_27" }, { "__ref": "Paragraph:b8e957989cdb_28" }, { "__ref": "Paragraph:b8e957989cdb_29" }, { "__ref": "Paragraph:b8e957989cdb_30" }], "sections": [{ "__typename": "Section", "name": "d1ae", "startIndex": 0, "textLayout": null, "imageLayout": null, "backgroundImage": null, "videoLayout": null, "backgroundVideo": null }] } } }, "ImageMetadata:1*FiZYYX9OMt0e4VyU97MXmw.png": { "id": "1*FiZYYX9OMt0e4VyU97MXmw.png", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "User:6ecfaac2bb6": { "id": "6ecfaac2bb6", "__typename": "User", "name": "Carol Bolger", "username": "BolgerCarol", "bio": "", "imageId": "0*ZtSP8538uAa6fSRD.png", "mediumMemberAt": 0, "customDomainState": null, "hasSubdomain": false }, "Post:49649f524766": { "id": "49649f524766", "__typename": "Post", "title": "Easily Add A Bit of Style With ShaderMask", "mediumUrl": "https:\u002F\u002Fmedium.com\u002F@BolgerCarol\u002Feasily-add-a-bit-of-style-with-shadermask-49649f524766", "previewImage": { "__ref": "ImageMetadata:1*FiZYYX9OMt0e4VyU97MXmw.png" }, "isPublished": true, "firstPublishedAt": 1586204796582, "readingTime": 2.3396226415094343, "statusForCollection": null, "isLocked": true, "visibility": "LOCKED", "collection": null, "creator": { "__ref": "User:6ecfaac2bb6" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:0*wEuw9aiSnScD509R": { "id": "0*wEuw9aiSnScD509R", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "User:40b0ab2529f2": { "id": "40b0ab2529f2", "__typename": "User", "name": "Aditya Rama", "username": "adityarama1210", "bio": "Fellow Software Engineer", "imageId": "1*DXKxoKSSyPzbB9zUqn_P9A.jpeg", "mediumMemberAt": 0, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "adityarama1210.medium.com" } }, "hasSubdomain": true }, "Post:497b43ad3409": { "id": "497b43ad3409", "__typename": "Post", "title": "Golang “Mocking” a Function for Unit Testing", "mediumUrl": "https:\u002F\u002Fadityarama1210.medium.com\u002Fgolang-mocking-a-function-for-unit-testing-497b43ad3409", "previewImage": { "__ref": "ImageMetadata:0*wEuw9aiSnScD509R" }, "isPublished": true, "firstPublishedAt": 1615436539248, "readingTime": 2.7924528301886795, "statusForCollection": null, "isLocked": false, "visibility": "PUBLIC", "collection": null, "creator": { "__ref": "User:40b0ab2529f2" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:1*bXmf9e2pKw7tf31S_r3yFw.jpeg": { "id": "1*bXmf9e2pKw7tf31S_r3yFw.jpeg", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "Collection:561b2b73629d": { "id": "561b2b73629d", "__typename": "Collection", "name": "CapTech Corner", "domain": null, "slug": "captech-corner" }, "User:96c94858b00": { "id": "96c94858b00", "__typename": "User", "name": "Parthiv S Vora", "username": "psvora", "bio": "Engineer at CapTech. I work on all kinds of stuff.", "imageId": "1*1tZCKzn_ehgHenvlJC8pbQ.jpeg", "mediumMemberAt": 0, "customDomainState": null, "hasSubdomain": false }, "Post:49b10ddbea0b": { "id": "49b10ddbea0b", "__typename": "Post", "title": "Serverless Framework vs CDK, Which One Should I Use?", "mediumUrl": "https:\u002F\u002Fmedium.com\u002Fcaptech-corner\u002Fserverless-framework-vs-cdk-which-one-should-i-use-49b10ddbea0b", "previewImage": { "__ref": "ImageMetadata:1*bXmf9e2pKw7tf31S_r3yFw.jpeg" }, "isPublished": true, "firstPublishedAt": 1621438644807, "readingTime": 5.79622641509434, "statusForCollection": "APPROVED", "isLocked": false, "visibility": "PUBLIC", "collection": { "__ref": "Collection:561b2b73629d" }, "creator": { "__ref": "User:96c94858b00" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:1*kysWUKovj5lz96in8jhWDQ.png": { "id": "1*kysWUKovj5lz96in8jhWDQ.png", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "Collection:9758482ba857": { "id": "9758482ba857", "__typename": "Collection", "name": "Geek Culture", "domain": null, "slug": "geekculture" }, "User:4381b405c4d7": { "id": "4381b405c4d7", "__typename": "User", "name": "Daniel Benson", "username": "danielbensonpoe", "bio": "I am a Data Scientist and writer prone to excitement and passion. I look forward to a future I am able to focus those characteristics into work I love.", "imageId": "1*VLeq87mHZ0mUyqNZnJ3iCA.jpeg", "mediumMemberAt": 0, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "danielbensonpoe.medium.com" } }, "hasSubdomain": true }, "Post:49d823258436": { "id": "49d823258436", "__typename": "Post", "title": "Python to C++, A Data Scientist’s Journey to Learning a New Language — Conditions, Conditional…", "mediumUrl": "https:\u002F\u002Fmedium.com\u002Fgeekculture\u002Fpython-to-c-a-data-scientists-journey-to-learning-a-new-language-conditions-conditional-49d823258436", "previewImage": { "__ref": "ImageMetadata:1*kysWUKovj5lz96in8jhWDQ.png" }, "isPublished": true, "firstPublishedAt": 1624119778192, "readingTime": 10.316037735849058, "statusForCollection": "APPROVED", "isLocked": true, "visibility": "LOCKED", "collection": { "__ref": "Collection:9758482ba857" }, "creator": { "__ref": "User:4381b405c4d7" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:1*UH2DA2QTd0ykuHie2MfovQ.png": { "id": "1*UH2DA2QTd0ykuHie2MfovQ.png", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "User:6f53bdcbb831": { "id": "6f53bdcbb831", "__typename": "User", "name": "Payoda Technology Inc", "username": "payodatechnologyinc", "bio": "Your Digital Transformation partner. We are here to share knowledge on varied technologies, updates; and to stay in touch with the tech-space.", "imageId": "2*sHvVJCgHjCOI6A2XTQstsA.jpeg", "mediumMemberAt": 0, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "payodatechnologyinc.medium.com" } }, "hasSubdomain": true }, "Post:49dd17e76750": { "id": "49dd17e76750", "__typename": "Post", "title": "The Cost of Inadequate Testing of Software", "mediumUrl": "https:\u002F\u002Fpayodatechnologyinc.medium.com\u002Fthe-cost-of-inadequate-testing-of-software-49dd17e76750", "previewImage": { "__ref": "ImageMetadata:1*UH2DA2QTd0ykuHie2MfovQ.png" }, "isPublished": true, "firstPublishedAt": 1617598965152, "readingTime": 2.6830188679245284, "statusForCollection": null, "isLocked": false, "visibility": "PUBLIC", "collection": null, "creator": { "__ref": "User:6f53bdcbb831" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:0*WvrscsdwobWKSldv.png": { "id": "0*WvrscsdwobWKSldv.png", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "User:61e1f1fee4ce": { "id": "61e1f1fee4ce", "__typename": "User", "name": "Xiao Ling", "username": "yushulx", "bio": "Manager of Dynamsoft Open Source Projects | Tech Lover", "imageId": "1*Qong0KX7CGbH3YiKRMEyxg.jpeg", "mediumMemberAt": 0, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "yushulx.medium.com" } }, "hasSubdomain": true }, "Post:49e9edb2e88": { "id": "49e9edb2e88", "__typename": "Post", "title": "How to Build .NET Webcam Barcode Scanner with DirectShow", "mediumUrl": "https:\u002F\u002Fmedium.com\u002Fswlh\u002Fhow-to-build-net-webcam-barcode-scanner-with-directshow-49e9edb2e88", "previewImage": { "__ref": "ImageMetadata:0*WvrscsdwobWKSldv.png" }, "isPublished": true, "firstPublishedAt": 1585818732000, "readingTime": 2.518867924528302, "statusForCollection": "APPROVED", "isLocked": true, "visibility": "LOCKED", "collection": { "__ref": "Collection:f5af2b715248" }, "creator": { "__ref": "User:61e1f1fee4ce" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:0*vWIAsrn2PPwy5GTr": { "id": "0*vWIAsrn2PPwy5GTr", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "User:5c49bc4ac10b": { "id": "5c49bc4ac10b", "__typename": "User", "name": "Chamal Weerasinghe", "username": "chamalwr", "bio": "Software Engineer", "imageId": "1*fs-3BiK5JrmJHDMREMJnYQ.jpeg", "mediumMemberAt": 0, "customDomainState": { "__typename": "CustomDomainState", "live": { "__typename": "CustomDomain", "domain": "chamalwr.medium.com" } }, "hasSubdomain": true }, "Post:4a146b7c6fd": { "id": "4a146b7c6fd", "__typename": "Post", "title": "Inside the JVM — Part 03 (ClassLoader Cont…)", "mediumUrl": "https:\u002F\u002Fchamalwr.medium.com\u002Finside-the-jvm-part-03-classloader-cont-4a146b7c6fd", "previewImage": { "__ref": "ImageMetadata:0*vWIAsrn2PPwy5GTr" }, "isPublished": true, "firstPublishedAt": 1620057224317, "readingTime": 3.376415094339623, "statusForCollection": null, "isLocked": false, "visibility": "PUBLIC", "collection": null, "creator": { "__ref": "User:5c49bc4ac10b" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } }, "ImageMetadata:1*8h2uG6X4g-UnWi6cizlw1A.png": { "id": "1*8h2uG6X4g-UnWi6cizlw1A.png", "__typename": "ImageMetadata", "focusPercentX": null, "focusPercentY": null }, "User:577e99bfd542": { "id": "577e99bfd542", "__typename": "User", "name": "Ahamed Raaseem", "username": "ahamedraaseem", "bio": "", "imageId": "0*eV19B3rg5Z1ybqyc", "mediumMemberAt": 0, "customDomainState": null, "hasSubdomain": false }, "Post:781ea5a0e8ae": { "id": "781ea5a0e8ae", "__typename": "Post", "title": "What is Kubernetes?", "mediumUrl": "https:\u002F\u002Fmedium.com\u002F@ahamedraaseem\u002Fwhat-is-kubernetes-781ea5a0e8ae", "previewImage": { "__ref": "ImageMetadata:1*8h2uG6X4g-UnWi6cizlw1A.png" }, "isPublished": true, "firstPublishedAt": 1556340576535, "readingTime": 5.889622641509433, "statusForCollection": null, "isLocked": true, "visibility": "LOCKED", "collection": null, "creator": { "__ref": "User:577e99bfd542" }, "previewContent": { "__typename": "PreviewContent", "isFullContent": false } } }</script>
+	<script>window.__MIDDLEWARE_STATE__ = { "session": { "xsrf": "" }, "cache": { "cacheStatus": "HIT" } }</script>
+	<script src="https://cdn-client.medium.com/lite/static/js/manifest.b3b977b8.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/5972.83cac93c.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/main.c2b233ed.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/5573.159bf40f.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/instrumentation.6fa29f8a.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/reporting.6471519f.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/1752.a348f767.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/5704.63dc8549.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/6122.7f82492f.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/9692.698fedbe.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/6084.3e99c911.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/5064.0923a1f3.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/4586.547ab352.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/3609.397e018a.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/9046.f8413c22.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/4268.0b29a93d.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/4579.b4589409.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/2712.423ae4ce.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/1146.b9758a18.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/3810.a443e7f7.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/9972.2e7900a2.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/7526.1908f9f2.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/7883.e6959765.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/1722.3fffe63a.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/1429.f9500755.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/1264.075efc9e.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/9764.76cef390.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/4697.9dc5d338.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/702.310bad91.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/3507.d37cf76f.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/4401.9503d615.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/2182.40a25960.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/9356.a3d5854d.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/9595.19db140a.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/3874.9de72838.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/450.bd8ad364.chunk.js"></script>
+	<script src="https://cdn-client.medium.com/lite/static/js/Post.4226f192.chunk.js"></script>
+	<script>window.main();</script>
+	<script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+		data-cf-beacon='{"rayId":"665654cd8ac31532","token":"0b5f665943484354a59c39c6833f7078","version":"2021.5.2","si":10}'></script>
+</body>
+
+</html>

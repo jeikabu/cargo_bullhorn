@@ -1,3 +1,5 @@
+#![cfg(feature = "medium")]
+
 use crate::{*, post::Post};
 
 const URL: &str = "https://api.medium.com/v1";
@@ -113,7 +115,7 @@ impl Medium {
 						let story = self.client.get(link.clone())
 							.send().await?
 							.text().await?;
-						if let Some(story_canonical_url) = get_canonical(&story) {
+						if let Some(story_canonical_url) = parse_article_canonical(&story) {
 							debug!("Found canonical URL: href={:?} ({})", story_canonical_url, link);
 							if &story_canonical_url == canonical_url {
 								info!("Matched existing article: {}", canonical_url);
@@ -137,7 +139,7 @@ impl RequestBuilderExt<Medium> for reqwest::RequestBuilder {
 	}
 }
 
-fn get_canonical(text: &str) -> Option<String> {
+fn parse_article_canonical(text: &str) -> Option<String> {
 	let mut reader = quick_xml::Reader::from_str(text);
 	reader.trim_text(true);
 	
@@ -156,14 +158,13 @@ fn get_canonical(text: &str) -> Option<String> {
 				break;
 			},
 			Ok(Event::Empty(ref e)) if is_head && e.name() == b"link" => {
-				//trace!("Empty link {:?}", e);
-				let has_canonical = e.attributes().find(|attr|
+				let has_canonical = e.attributes().any(|attr|
 					if let Ok(attr) = attr {
 						attr.key == b"rel" && &*attr.value == b"canonical"
 					} else {
 						false
 					}
-				).is_some();
+				);
 				if has_canonical {
 					let href = e.attributes().filter_map(|x| x.ok())
 						.find(|attr| attr.key == b"href")
@@ -193,4 +194,22 @@ struct UserData {
 	name: String,
 	url: String,
 	image_url: String,
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+
+	#[test]
+	fn parse_article() -> Result<()> {
+		use std::io::prelude::*;
+		let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+			.join("tests").join("medium_article.html");
+        let mut buffer = String::new();
+        let _size = std::fs::File::open(path)?
+            .read_to_string(&mut buffer)?;
+		let canonical_url = parse_article_canonical(&buffer).unwrap();
+		assert_eq!(canonical_url, "https://rendered-obsolete.github.io/2021/05/03/dotnet_calli.html");
+		Ok(())
+	}
 }

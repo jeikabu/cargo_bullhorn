@@ -9,10 +9,12 @@ repository = "https://github.com/jeikabu/cargo_bullhorn"
 description = "CLI tool to publish articles and update them."
 
 [features]
-default = ["github_pages", "hashnode", "medium"]
+default = ["devto", "github_pages", "hashnode", "medium"]
+devto = []
 github_pages = ["git"]
-hashnode = ["graphql_client", "slug"]
+hashnode = ["graphql_client", "quick-xml"]
 medium = ["rss", "quick-xml"]
+
 
 [dependencies]
 anyhow = "1.0"
@@ -29,7 +31,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_yaml = "0.8"
 shellexpand = "2.1"
-slug = { version = "0.1", optional = true }
+slug = { version = "0.1" }
 thiserror = "1.0"
 tokio = { version = "1.5.0", features = ["full"] }
 tracing = "0.1"

@@ -38,6 +38,8 @@ pub enum Platforms {
     Medium,
 	Devto,
     Hashnode,
+
+    All,
 }
 
 #[derive(clap::ArgEnum, Clone, Debug, PartialEq)]
@@ -86,9 +88,9 @@ pub struct Settings {
 #[derive(Clap, Debug, Default)]
 #[clap(version = crate_version!())]
 pub struct Opts {
-    #[clap(long, requires = "hashnode-username", env = HASHNODE_USERNAME)]
+    #[clap(long, requires = "hashnode-username", env = HASHNODE_API_TOKEN)]
     pub hashnode_api_token: Option<String>,
-    #[clap(long, requires = "hashnode-api-token", env = HASHNODE_API_TOKEN)]
+    #[clap(long, requires = "hashnode-api-token", env = HASHNODE_USERNAME)]
     pub hashnode_username: Option<String>,
     #[clap(long, env = MEDIUM_API_TOKEN)]
     pub medium_api_token: Option<String>,
@@ -97,8 +99,8 @@ pub struct Opts {
     #[clap(long, env = DEVTO_API_TOKEN)]
     pub devto_api_token: Option<String>,
 
-    /// Platform(s) to enable
-    #[clap(long, arg_enum, multiple = true, default_value = "medium devto hashnode")]
+    /// Platform(s) to enable.
+    #[clap(long, arg_enum, multiple = true, default_value = "all")]
     pub platforms: Vec<Platforms>,
 
     #[clap(flatten)]
@@ -111,27 +113,27 @@ pub fn process_config(opts: &mut Opts, config: &str) -> Result<()> {
     opts.devto_api_token = opts
         .devto_api_token
         .as_ref()
-        .or(config.get(DEVTO_API_TOKEN))
+        .or_else(|| config.get(DEVTO_API_TOKEN))
         .cloned();
     opts.hashnode_api_token = opts
         .hashnode_api_token
         .as_ref()
-        .or(config.get(HASHNODE_API_TOKEN))
+        .or_else(|| config.get(HASHNODE_API_TOKEN))
         .cloned();
     opts.hashnode_username = opts
         .hashnode_username
         .as_ref()
-        .or(config.get(HASHNODE_USERNAME))
+        .or_else(|| config.get(HASHNODE_USERNAME))
         .cloned();
     opts.medium_api_token = opts
         .medium_api_token
         .as_ref()
-        .or(config.get(MEDIUM_API_TOKEN))
+        .or_else(|| config.get(MEDIUM_API_TOKEN))
         .cloned();
     opts.medium_publication_id = opts
         .medium_publication_id
         .as_ref()
-        .or(config.get(MEDIUM_PUBLICATION_ID))
+        .or_else(|| config.get(MEDIUM_PUBLICATION_ID))
         .cloned();
     Ok(())
 }
@@ -145,16 +147,16 @@ mod tests {
         let config = format!("
             {devto}: {devto}
             {hashnode_token}: {hashnode_token}
-            {hashnode_pub_id}: {hashnode_pub_id}
+            {hashnode_username}: {hashnode_username}
             ",
             devto = DEVTO_API_TOKEN,
             hashnode_token = HASHNODE_API_TOKEN,
-            hashnode_pub_id = HASHNODE_PUBLICATION_ID,
+            hashnode_username = HASHNODE_USERNAME,
         );
         let mut opts: Opts = Default::default();
         process_config(&mut opts, &config).unwrap();
         assert_eq!(opts.devto_api_token, Some(DEVTO_API_TOKEN.to_owned()));
         assert_eq!(opts.hashnode_api_token, Some(HASHNODE_API_TOKEN.to_owned()));
-        assert_eq!(opts.hashnode_publication_id, Some(HASHNODE_PUBLICATION_ID.to_owned()));
+        assert_eq!(opts.hashnode_username, Some(HASHNODE_USERNAME.to_owned()));
     }
 }

@@ -44,6 +44,12 @@ async fn start() -> Result<()> {
         .init();
 
     let mut opts = Opts::parse();
+    if opts.platforms.is_empty() || opts.platforms.iter().any(|i| *i == Platforms::All) {
+        opts.platforms.clear();
+        opts.platforms.push(Platforms::Devto);
+        opts.platforms.push(Platforms::Hashnode);
+        opts.platforms.push(Platforms::Medium);
+    }
 
     if let Ok(config) = shellexpand::env(&opts.settings.config) {
         use std::io::prelude::*;
@@ -66,10 +72,15 @@ async fn start() -> Result<()> {
         post.apply(&opts.settings);
 
         // Post "original" represented by canonical URL
-        let git = github_pages::GithubPages::new(&post, opts.settings.clone())?;
-        git.publish(&mut post)?;
+        #[cfg(feature = "github_pages")]
+        {
+            let git = github_pages::GithubPages::new(&post, opts.settings.clone())?;
+            git.publish(&mut post)?;
+        }
 
         let mut futures: Vec<futures::future::LocalBoxFuture<()>> = vec![];
+
+        #[cfg(feature = "devto")]
         if let (Some(_), Some(api_token)) = (opts.platforms.iter().find(|p| **p == Platforms::Devto), &opts.devto_api_token) {
             let settings = opts.settings.clone();
             let post = post.clone();
@@ -79,6 +90,7 @@ async fn start() -> Result<()> {
             }));
         }
 
+        #[cfg(feature = "hashnode")]
         if let (Some(_), Some(api_token), Some(username)) = (opts.platforms.iter().find(|p| **p == Platforms::Hashnode), &opts.hashnode_api_token, &opts.hashnode_username) {
             let settings = opts.settings.clone();
             let post = post.clone();
@@ -88,6 +100,7 @@ async fn start() -> Result<()> {
             }));
         }
 
+        #[cfg(feature = "medium")]
         if let (Some(_), Some(api_token)) = (opts.platforms.iter().find(|p| **p == Platforms::Medium), &opts.medium_api_token) {
             let settings = opts.settings.clone();
             let pub_id = opts.medium_publication_id.clone();
