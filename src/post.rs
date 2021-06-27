@@ -43,8 +43,8 @@ impl FrontMatter {
     }
 
     pub fn is_published(&self) -> bool {
-		self.published.unwrap_or(Self::IS_PUBLISHED)
-	}
+        self.published.unwrap_or(Self::IS_PUBLISHED)
+    }
 }
 
 impl Post {
@@ -59,10 +59,17 @@ impl Post {
         let mut matches = re.splitn(&text, 3);
         matches.next(); // Skip the split before the first dashes
         let front_matter = {
-            let text = matches.next().ok_or(Error::BadFormat { thing: "no front-matter".to_owned() })?;
+            let text = matches.next().ok_or(Error::BadFormat {
+                thing: "no front-matter".to_owned(),
+            })?;
             FrontMatter::new(text)?
         };
-        let body = matches.next().map(|s| s.to_owned()).ok_or(Error::BadFormat { thing: "no body".to_owned() })?;
+        let body = matches
+            .next()
+            .map(|s| s.to_owned())
+            .ok_or(Error::BadFormat {
+                thing: "no body".to_owned(),
+            })?;
         Ok(Post {
             body,
             front_matter,
@@ -115,12 +122,14 @@ mod tests {
     fn missing() {
         for text in &[
             // No front-matter
-            "---\n \n---\nbody", "---\n\n---\nbody", "---\n---\nbody",
+            "---\n \n---\nbody",
+            "---\n\n---\nbody",
+            "---\n---\nbody",
             // No body
             "---\ntitle: title\n---",
             // Nothing
-            ""
-            ] {
+            "",
+        ] {
             let _ = Post::new(text);
         }
     }

@@ -6,12 +6,12 @@ mod platforms;
 mod post;
 mod settings;
 
-use post::Post;
 use platforms::*;
+use post::Post;
 use settings::*;
 
 trait RequestBuilderExt<T> {
-	fn auth(self, platform: &T) -> Self;
+    fn auth(self, platform: &T) -> Self;
 }
 
 #[derive(thiserror::Error, Clone, Debug)]
@@ -22,21 +22,12 @@ pub enum Error {
         found: std::path::PathBuf,
     },
     #[error("Bad string, expected {expected}: {found}")]
-    BadString {
-        expected: String,
-        found: String,
-    },
+    BadString { expected: String, found: String },
     #[error("Not found: {expected}")]
-    NotFound {
-        expected: String,
-    },
+    NotFound { expected: String },
     #[error("Bad format: {thing}")]
-    BadFormat {
-        thing: String,
-    },
+    BadFormat { thing: String },
 }
-
-
 
 async fn start() -> Result<()> {
     tracing_subscriber::fmt()
@@ -61,7 +52,7 @@ async fn start() -> Result<()> {
     } else {
         error!("Unable to expand config: {}", opts.settings.config);
     }
-    
+
     for file in &opts.settings.posts {
         let path = std::path::PathBuf::from(file);
         if !path.is_file() {
@@ -81,7 +72,10 @@ async fn start() -> Result<()> {
         let mut futures: Vec<futures::future::LocalBoxFuture<()>> = vec![];
 
         #[cfg(feature = "devto")]
-        if let (Some(_), Some(api_token)) = (opts.platforms.iter().find(|p| **p == Platforms::Devto), &opts.devto_api_token) {
+        if let (Some(_), Some(api_token)) = (
+            opts.platforms.iter().find(|p| **p == Platforms::Devto),
+            &opts.devto_api_token,
+        ) {
             let settings = opts.settings.clone();
             let post = post.clone();
             futures.push(Box::pin(async move {
@@ -91,17 +85,25 @@ async fn start() -> Result<()> {
         }
 
         #[cfg(feature = "hashnode")]
-        if let (Some(_), Some(api_token), Some(username)) = (opts.platforms.iter().find(|p| **p == Platforms::Hashnode), &opts.hashnode_api_token, &opts.hashnode_username) {
+        if let (Some(_), Some(api_token), Some(username)) = (
+            opts.platforms.iter().find(|p| **p == Platforms::Hashnode),
+            &opts.hashnode_api_token,
+            &opts.hashnode_username,
+        ) {
             let settings = opts.settings.clone();
             let post = post.clone();
             futures.push(Box::pin(async move {
-                let hashnode = hashnode::Hashnode::new(api_token.clone(), username.clone(), settings);
+                let hashnode =
+                    hashnode::Hashnode::new(api_token.clone(), username.clone(), settings);
                 hashnode.try_publish(post).await
             }));
         }
 
         #[cfg(feature = "medium")]
-        if let (Some(_), Some(api_token)) = (opts.platforms.iter().find(|p| **p == Platforms::Medium), &opts.medium_api_token) {
+        if let (Some(_), Some(api_token)) = (
+            opts.platforms.iter().find(|p| **p == Platforms::Medium),
+            &opts.medium_api_token,
+        ) {
             let settings = opts.settings.clone();
             let pub_id = opts.medium_publication_id.clone();
             let post = post.clone();
@@ -112,10 +114,9 @@ async fn start() -> Result<()> {
         }
         futures::future::join_all(futures).await;
     }
-    
+
     Ok(())
 }
-
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -127,7 +128,5 @@ mod tests {
     use super::*;
 
     #[test]
-    fn apply_config() {
-        
-    }
+    fn apply_config() {}
 }

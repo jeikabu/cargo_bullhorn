@@ -1,5 +1,5 @@
-use clap::{Clap, crate_version};
 use crate::*;
+use clap::{crate_version, Clap};
 
 const DEVTO_API_TOKEN: &str = "DEVTO_API_TOKEN";
 const HASHNODE_API_TOKEN: &str = "HASHNODE_API_TOKEN";
@@ -23,9 +23,8 @@ impl Default for Operation {
 #[derive(clap::ArgEnum, Clone, Debug, PartialEq)]
 pub enum Compare {
     CanonicalUrl,
-	Slug,
+    Slug,
 }
-
 
 impl Default for Compare {
     fn default() -> Self {
@@ -36,7 +35,7 @@ impl Default for Compare {
 #[derive(clap::ArgEnum, Clone, Debug, PartialEq)]
 pub enum Platforms {
     Medium,
-	Devto,
+    Devto,
     Hashnode,
 
     All,
@@ -54,7 +53,7 @@ pub struct Settings {
     /// Dry run (e.g. no REST POST/PUT, GraphQL mutation, etc.)
     #[clap(long)]
     pub dry: bool,
-	/// Posts created as drafts, if possible
+    /// Posts created as drafts, if possible
     #[clap(long)]
     pub draft: bool,
     /// Operation to perform (i.e. update, or submit new)
@@ -73,8 +72,8 @@ pub struct Settings {
     #[clap(long, default_value = "$HOME/.bullhorn.yaml")]
     pub config: String,
     /// Override front-matter `slug` value
-	#[clap(long)]
-	pub slug: Option<String>,
+    #[clap(long)]
+    pub slug: Option<String>,
 
     /// Article fields to write when updating an article
     #[clap(long, arg_enum, multiple = true)]
@@ -144,7 +143,8 @@ mod tests {
 
     #[test]
     fn apply_config() {
-        let config = format!("
+        let config = format!(
+            "
             {devto}: {devto}
             {hashnode_token}: {hashnode_token}
             {hashnode_username}: {hashnode_username}
