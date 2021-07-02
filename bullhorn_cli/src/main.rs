@@ -27,6 +27,8 @@ pub enum Error {
     NotFound { expected: String },
     #[error("Bad format: {thing}")]
     BadFormat { thing: String },
+    #[error("Failed")]
+    Failed,
 }
 
 async fn start() -> Result<()> {
@@ -36,10 +38,12 @@ async fn start() -> Result<()> {
 
     let mut opts = Opts::parse();
     if opts.platforms.is_empty() || opts.platforms.iter().any(|i| *i == Platforms::All) {
-        opts.platforms.clear();
-        opts.platforms.push(Platforms::Devto);
-        opts.platforms.push(Platforms::Hashnode);
-        opts.platforms.push(Platforms::Medium);
+        opts.platforms = vec![
+            Platforms::Devto,
+            Platforms::Hashnode,
+            Platforms::Medium,
+            Platforms::Tumblr,
+        ];
     }
 
     if let Ok(config) = shellexpand::env(&opts.settings.config) {
@@ -112,6 +116,53 @@ async fn start() -> Result<()> {
                 medium.try_publish(post).await
             }));
         }
+
+        // #[cfg(feature = "tumblr")]
+        // if let (Some(_), Some(consumer_key), Some(consumer_secret)) = (
+        //     opts.platforms.iter().find(|p| **p == Platforms::Tumblr),
+        //     &opts.tumblr_consumer_key,
+        //     &opts.tumblr_consumer_secret,
+        // ) {
+        //     let settings = opts.settings.clone();
+        //     let post = post.clone();
+        //     futures.push(Box::pin(async move {
+        //         let medium =
+        //             tumblr::Auth::new(consumer_key.clone(), consumer_secret.clone(), settings);
+        //         medium.try_auth().await
+        //     }));
+        // }
+
+        #[cfg(feature = "tumblr")]
+        if let (
+            Some(_),
+            Some(consumer_key),
+            Some(consumer_secret),
+            Some(token),
+            Some(token_secret),
+            Some(blog_id),
+        ) = (
+            opts.platforms.iter().find(|p| **p == Platforms::Tumblr),
+            &opts.tumblr_consumer_key,
+            &opts.tumblr_consumer_secret,
+            &opts.tumblr_token,
+            &opts.tumblr_token_secret,
+            &opts.tumblr_blog_id,
+        ) {
+            let settings = opts.settings.clone();
+            let post = post.clone();
+            futures.push(Box::pin(async move {
+                let medium = tumblr::Tumblr::new(
+                    consumer_key.clone(),
+                    consumer_secret.clone(),
+                    token.clone(),
+                    token_secret.clone(),
+                    blog_id.clone(),
+                    settings,
+                );
+                medium.try_publish(post).await
+            }));
+        }
+
         futures::future::join_all(futures).await;
     }
 

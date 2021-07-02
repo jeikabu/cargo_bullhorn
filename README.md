@@ -38,8 +38,8 @@ OPTIONS:
 
         --date <date>                                      Publish date if not today
         --devto-api-token <devto-api-token>                [env: DEVTO_API_TOKEN=]
-        --hashnode-api-token <hashnode-api-token>          [env: HASHNODE_USERNAME=]
-        --hashnode-username <hashnode-username>            [env: HASHNODE_API_TOKEN=]
+        --hashnode-api-token <hashnode-api-token>          [env: HASHNODE_API_TOKEN=]
+        --hashnode-username <hashnode-username>            [env: HASHNODE_USERNAME=]
         --medium-api-token <medium-api-token>              [env: MEDIUM_API_TOKEN=]
         --medium-publication-id <medium-publication-id>    [env: MEDIUM_PUBLICATION_ID=]
         --operation <operation>
@@ -47,8 +47,7 @@ OPTIONS:
             auto, put, post]
 
         --platforms <platforms>...
-            Platform(s) to enable [default: medium devto hashnode] [possible values: medium, devto,
-            hashnode]
+            Platform(s) to enable [default: all] [possible values: medium, devto, hashnode, all]
 
         --remote <remote>                                  Git remote to use [default: origin]
         --slug <slug>                                      Override front-matter `slug` value
@@ -69,7 +68,7 @@ OPTIONS:
 | Cross-post Articles | | ✅ | ✅ | ✅
 | Update articles | | 🚫 | 👎 | ✅
 | Front-matter Tags | ✅ | ✅ | 👎 | ✅
-| Front-matter Date | | 🚫 | ✅ | ✅
+| Front-matter Date | | 🚫 | 👎 | ✅
 | Publications | | 👎 | ✅ | 🚫
 
 🚫 = Not supported
