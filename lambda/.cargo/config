@@ -1,0 +1,7 @@
+[build]
+# Override default build target
+target = "x86_64-unknown-linux-musl"
+
+# Needed on Mac otherwise build fails with `ld: unknown option: --eh-frame-hdr`
+[target.x86_64-unknown-linux-musl]
+linker = "x86_64-linux-musl-gcc"

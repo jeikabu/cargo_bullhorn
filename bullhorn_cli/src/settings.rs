@@ -6,6 +6,11 @@ const HASHNODE_API_TOKEN: &str = "HASHNODE_API_TOKEN";
 const HASHNODE_USERNAME: &str = "HASHNODE_USERNAME";
 const MEDIUM_API_TOKEN: &str = "MEDIUM_API_TOKEN";
 const MEDIUM_PUBLICATION_ID: &str = "MEDIUM_PUBLICATION_ID";
+const TUMBLR_CONSUMER_KEY: &str = "TUMBLR_CONSUMER_KEY";
+const TUMBLR_CONSUMER_SECRET: &str = "TUMBLR_CONSUMER_SECRET";
+const TUMBLR_OAUTH_TOKEN: &str = "TUMBLR_OAUTH_TOKEN";
+const TUMBLR_OAUTH_TOKEN_SECRET: &str = "TUMBLR_OAUTH_TOKEN_SECRET";
+const TUMBLR_BLOG_ID: &str = "TUMBLR_BLOG_ID";
 
 #[derive(clap::ArgEnum, Clone, Debug, PartialEq)]
 pub enum Operation {
@@ -37,6 +42,7 @@ pub enum Platforms {
     Medium,
     Devto,
     Hashnode,
+    Tumblr,
 
     All,
 }
@@ -98,6 +104,22 @@ pub struct Opts {
     #[clap(long, env = DEVTO_API_TOKEN)]
     pub devto_api_token: Option<String>,
 
+    /// Tumblr consumer key (OAuth client key)
+    #[clap(long, env = TUMBLR_CONSUMER_KEY)]
+    pub tumblr_consumer_key: Option<String>,
+    /// Tumblr consumer secret (OAuth client secret)
+    #[clap(long, env = TUMBLR_CONSUMER_SECRET)]
+    pub tumblr_consumer_secret: Option<String>,
+    /// Tumblr user OAuth token
+    #[clap(long, env = TUMBLR_OAUTH_TOKEN)]
+    pub tumblr_token: Option<String>,
+    /// Tumblr user OAuth token secret
+    #[clap(long, env = TUMBLR_OAUTH_TOKEN_SECRET)]
+    pub tumblr_token_secret: Option<String>,
+    /// Tumblr blog ID (e.g. `https://www.tumblr.com/blog/{blog_id}`)
+    #[clap(long, env = TUMBLR_BLOG_ID)]
+    pub tumblr_blog_id: Option<String>,
+
     /// Platform(s) to enable.
     #[clap(long, arg_enum, multiple = true, default_value = "all")]
     pub platforms: Vec<Platforms>,
@@ -133,6 +155,31 @@ pub fn process_config(opts: &mut Opts, config: &str) -> Result<()> {
         .medium_publication_id
         .as_ref()
         .or_else(|| config.get(MEDIUM_PUBLICATION_ID))
+        .cloned();
+    opts.tumblr_consumer_key = opts
+        .tumblr_consumer_key
+        .as_ref()
+        .or_else(|| config.get(TUMBLR_CONSUMER_KEY))
+        .cloned();
+    opts.tumblr_consumer_secret = opts
+        .tumblr_consumer_secret
+        .as_ref()
+        .or_else(|| config.get(TUMBLR_CONSUMER_SECRET))
+        .cloned();
+    opts.tumblr_token = opts
+        .tumblr_token
+        .as_ref()
+        .or_else(|| config.get(TUMBLR_OAUTH_TOKEN))
+        .cloned();
+    opts.tumblr_token_secret = opts
+        .tumblr_token_secret
+        .as_ref()
+        .or_else(|| config.get(TUMBLR_OAUTH_TOKEN_SECRET))
+        .cloned();
+    opts.tumblr_blog_id = opts
+        .tumblr_blog_id
+        .as_ref()
+        .or_else(|| config.get(TUMBLR_BLOG_ID))
         .cloned();
     Ok(())
 }

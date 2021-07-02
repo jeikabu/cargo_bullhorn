@@ -1,0 +1,24 @@
+[package]
+name = "bullhorn_lambda"
+version = "0.1.0"
+authors = ["jeikabu <jeikabu@users.noreply.github.com>"]
+edition = "2018"
+license = "MIT"
+repository = "https://github.com/jeikabu/cargo_bullhorn"
+
+# Rename binary for AWS Lambda custom runtime:
+# https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html
+[[bin]]
+name = "bootstrap"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0"
+aws_sqs = { git = "https://github.com/awslabs/aws-sdk-rust", tag = "v0.0.10-alpha", package = "aws-sdk-sqs" }
+futures = "0.3"
+lambda_runtime = "0.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.5.0", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = "0.2"
