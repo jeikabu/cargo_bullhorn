@@ -24,12 +24,22 @@ struct Body {
 
 impl From<Post> for Body {
     fn from(item: Post) -> Self {
+        let published = item.front_matter.is_published();
+        
+        let tags = item.front_matter.tags.unwrap_or_default();
+        let num_tags = tags.len();
+        // Must limit to 4 tags otherwise devto returns 422: "Tag list exceed the maximum of 4 tags"
+        const MAX_TAGS: usize = 4;
+        let tags = tags.into_iter().take(MAX_TAGS).collect();
+        if num_tags > MAX_TAGS {
+            warn!("Limited to {} tags, reduced to: {:?}", MAX_TAGS, tags);
+        }
         let article = Article {
             title: item.front_matter.title.clone(),
             body_markdown: item.body,
-            published: item.front_matter.is_published(),
+            published,
             canonical_url: item.front_matter.canonical_url,
-            tags: item.front_matter.tags.unwrap_or_default(),
+            tags,
             series: item.front_matter.series,
             date: item.front_matter.date,
         };
@@ -119,22 +129,24 @@ impl Devto {
                 .auth(self)
                 .send()
                 .await?;
+        } else if let Some(existing_id) = existing_id {
+            let resp = self.client
+                .put(format!("{}/articles/{}", URL, existing_id))
+                .auth(self)
+                .json(&body)
+                .send()
+                .await?;
+            let text = resp.text().await?;
+            debug!("{}", text);
         } else {
-            if let Some(existing_id) = existing_id {
-                self.client
-                    .put(format!("{}/articles/{}", URL, existing_id))
-                    .auth(self)
-                    .json(&body)
-                    .send()
-                    .await?;
-            } else {
-                self.client
-                    .post("https://dev.to/api/articles")
-                    .auth(self)
-                    .json(&body)
-                    .send()
-                    .await?;
-            }
+            let resp = self.client
+                .post(format!("{}/articles", URL))
+                .auth(self)
+                .json(&body)
+                .send()
+                .await?;
+            let text = resp.text().await?;
+            debug!("{}", text);
         }
         Ok(())
     }
