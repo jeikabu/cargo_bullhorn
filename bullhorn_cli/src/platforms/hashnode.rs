@@ -341,7 +341,6 @@ mod tests {
 
     #[test]
     fn parse_tag() -> Result<()> {
-        use std::io::prelude::*;
         tracing_subscriber::fmt()
             .with_max_level(tracing::Level::TRACE)
             .with_test_writer()
@@ -349,10 +348,10 @@ mod tests {
 
         let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("tests")
-            .join("hashnode_tag.html");
-        let mut buffer = String::new();
-        let _size = std::fs::File::open(path)?.read_to_string(&mut buffer)?;
-        let info = parse_tag_html(&buffer)?;
+            .join("hashnode_tag.html.zst");
+        let file = std::fs::File::open(path)?;
+        let s = String::from_utf8(zstd::decode_all(file)?)?;
+        let info = parse_tag_html(&s)?;
         assert_eq!(info.name, "dotnet");
         Ok(())
     }
