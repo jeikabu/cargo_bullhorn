@@ -375,19 +375,18 @@ mod tests {
 
     #[test]
     fn existing() -> Result<()> {
-        use std::io::prelude::*;
         let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("tests")
-            .join("tumblr_posts.json");
-        let mut buffer = String::new();
-        let _size = std::fs::File::open(path)?.read_to_string(&mut buffer)?;
-        let posts: Posts = serde_json::from_str(&buffer)?;
+            .join("tumblr_posts.json.zst");
+        
+        let file = std::fs::File::open(path)?;
+        let bytes = zstd::decode_all(file)?;
+        let posts: Posts = serde_json::from_slice(&bytes)?;
         let post = {
             let mut post: post::Post = Default::default();
             post.front_matter.canonical_url = Some("https://rendered-obsolete.github.io/2021/05/03/dotnet_calli.html".to_owned());
             post
         };
-        
         assert_eq!(Tumblr::find_existing(&post, &posts).unwrap(), "655788057293963264");
         Ok(())
     }

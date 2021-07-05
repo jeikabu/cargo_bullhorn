@@ -213,13 +213,12 @@ mod tests {
 
     #[test]
     fn parse_article() -> Result<()> {
-        use std::io::prelude::*;
         let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("tests")
-            .join("medium_article.html");
-        let mut buffer = String::new();
-        let _size = std::fs::File::open(path)?.read_to_string(&mut buffer)?;
-        let canonical_url = parse_article_canonical(&buffer).unwrap();
+            .join("medium_article.html.zst");
+        let file = std::fs::File::open(path)?;
+        let s = String::from_utf8(zstd::decode_all(file)?)?;
+        let canonical_url = parse_article_canonical(&s).unwrap();
         assert_eq!(
             canonical_url,
             "https://rendered-obsolete.github.io/2021/05/03/dotnet_calli.html"
