@@ -1,5 +1,6 @@
 #![cfg(feature = "hashnode")]
 
+/// https://api.hashnode.com/
 use crate::{post::Post, *};
 use graphql_client::GraphQLQuery;
 

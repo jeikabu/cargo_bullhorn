@@ -1,5 +1,6 @@
 #![cfg(feature = "medium")]
 
+/// https://github.com/Medium/medium-api-docs
 use crate::{post::Post, *};
 
 const URL: &str = "https://api.medium.com/v1";
@@ -91,9 +92,37 @@ impl Medium {
             "Authenticated: {} ({} {})",
             user.username, user.name, user.id
         );
-        self.find_existing(&post, &user).await?;
+        let has_existing = self.find_existing(&post, &user).await.is_ok();
+        match self.settings.operation {
+            Operation::Auto => {
+                if has_existing {
+                    warn!("Skipping existing article.  Medium doesn't support update.");
+                    return Ok(());
+                }
+            }
+            Operation::Create => {
+                if has_existing {
+                    return Err(Error::Failed).with_context(|| {
+                        format!(
+                            "Existing article matching {:?}: {:?}",
+                            self.settings.compare, post
+                        )
+                    });
+                }
+            }
+            Operation::Update => {
+                if !has_existing {
+                    let expected = format!(
+                        "Existing article matching {:?}: {:?}",
+                        self.settings.compare, post
+                    );
+                    return Err(Error::NotFound { expected }.into());
+                }
+            }
+        }
+
         if self.settings.dry {
-            Ok(())
+            // Do nothing
         } else {
             let body: Article = post.into();
             let resp = self
@@ -104,8 +133,8 @@ impl Medium {
                 .send()
                 .await?;
             info!("{:?}", resp);
-            Ok(())
         }
+        Ok(())
     }
 
     async fn find_existing(&self, post: &Post, user: &UserData) -> Result<()> {
@@ -129,7 +158,7 @@ impl Medium {
                             );
                             if &story_canonical_url == canonical_url {
                                 info!("Matched existing article: {}", canonical_url);
-                                break;
+                                return Ok(());
                             }
                         }
                     }
@@ -138,7 +167,10 @@ impl Medium {
                 warn!("No canonical URL");
             }
         }
-        Ok(())
+        Err(Error::NotFound {
+            expected: "Existing post".to_owned(),
+        }
+        .into())
     }
 }
 

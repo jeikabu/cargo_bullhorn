@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Context, Result};
 use clap::Clap;
 use tracing::{debug, error, info, trace, warn};
 

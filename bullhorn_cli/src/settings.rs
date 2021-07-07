@@ -15,8 +15,8 @@ const TUMBLR_BLOG_ID: &str = "TUMBLR_BLOG_ID";
 #[derive(clap::ArgEnum, Clone, Debug, PartialEq)]
 pub enum Operation {
     Auto,
-    Put,
-    Post,
+    Create,
+    Update,
 }
 
 impl Default for Operation {

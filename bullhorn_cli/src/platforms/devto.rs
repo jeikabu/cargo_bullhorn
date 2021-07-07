@@ -1,5 +1,6 @@
 #![cfg(feature = "devto")]
 
+/// https://docs.forem.com/api
 use crate::{post::Post, *};
 
 type ArticleResponse = serde_json::Map<String, serde_json::Value>;
@@ -25,7 +26,7 @@ struct Body {
 impl From<Post> for Body {
     fn from(item: Post) -> Self {
         let published = item.front_matter.is_published();
-        
+
         let tags = item.front_matter.tags.unwrap_or_default();
         let num_tags = tags.len();
         // Must limit to 4 tags otherwise devto returns 422: "Tag list exceed the maximum of 4 tags"
@@ -130,23 +131,27 @@ impl Devto {
                 .send()
                 .await?;
         } else if let Some(existing_id) = existing_id {
-            let resp = self.client
+            let resp: Response = self
+                .client
                 .put(format!("{}/articles/{}", URL, existing_id))
                 .auth(self)
                 .json(&body)
                 .send()
+                .await?
+                .json()
                 .await?;
-            let text = resp.text().await?;
-            debug!("{}", text);
+            debug!("{:?}", resp);
         } else {
-            let resp = self.client
+            let resp = self
+                .client
                 .post(format!("{}/articles", URL))
                 .auth(self)
                 .json(&body)
                 .send()
+                .await?
+                .json()
                 .await?;
-            let text = resp.text().await?;
-            debug!("{}", text);
+            debug!("{:?}", resp);
         }
         Ok(())
     }
@@ -155,5 +160,31 @@ impl Devto {
 impl RequestBuilderExt<Devto> for reqwest::RequestBuilder {
     fn auth(self, platform: &Devto) -> Self {
         self.header("api-key", platform.api_token.clone())
+    }
+}
+
+#[derive(Debug, serde::Deserialize)]
+struct Response {
+    type_of: String,
+    id: u32,
+    title: String,
+    description: String,
+    slug: String,
+    path: String,
+    canonical_url: String,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn response() -> Result<()> {
+        let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join("devto_response.json.zst");
+        let file = std::fs::File::open(path)?;
+        let _: Response = serde_json::from_slice(&zstd::decode_all(file)?)?;
+        Ok(())
     }
 }
