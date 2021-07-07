@@ -45,16 +45,16 @@ impl Tumblr {
     }
 
     async fn publish(&self, post: post::Post) -> Result<()> {
-        let posts: Posts = self
+        let resp = self
             .client
             .get(format!("{}/blog/{}/posts", URL, self.blog_id))
             // Only requires api_key authentication, get response in "Neue Post Format"
             .query(&[("api_key", &self.consumer_key), ("npf", &"true".to_owned())])
             .send()
-            .await?
-            .json()
             .await?;
-        debug!("POSTS {:?}", posts);
+        let text = resp.text().await?;
+        trace!("Posts {}", text);
+        let posts: Posts = serde_json::from_str(&text)?;
         let existing = Self::find_existing(&post, &posts);
         if let Some(ref id) = existing {
             info!("Matched existing article: id={}", id);
@@ -74,12 +74,13 @@ impl Tumblr {
             // If we found existing article this will be Some and we'll update.  Otherwise this is None and we create.
             id: existing.clone(),
             title: Some(post.front_matter.title),
-            //date: post.front_matter.date,
+            date: post.front_matter.date,
             url: post.front_matter.canonical_url.unwrap(),
             tags,
+            description: post.front_matter.description,
             ..Default::default()
         };
-        
+
         // To create an article: POST {blog_id}/post
         // To update: POST {blog_id}/post/edit
         let uri = format!(
@@ -122,9 +123,10 @@ impl Tumblr {
                 .iter()
                 // Find block that is a "link" and contains canonical URL, and return its ID
                 .find(|block| match block {
-                    ContentBlock::Link { display_url, .. } => {
-                        display_url == post.front_matter.canonical_url.as_ref().unwrap()
-                    }
+                    ContentBlock::Link {
+                        display_url: Some(display_url),
+                        ..
+                    } => display_url == post.front_matter.canonical_url.as_ref().unwrap(),
                     _ => false,
                 })
                 .map(|_| p.id_string.clone())
@@ -199,7 +201,7 @@ struct PostsResponse {
 }
 
 #[derive(Debug, serde::Deserialize)]
-struct Blog{}
+struct Blog {}
 
 #[derive(Debug, serde::Deserialize)]
 struct Post {
@@ -210,12 +212,23 @@ struct Post {
     content: Vec<ContentBlock>,
 }
 
-// Serde will serialize these from JSON like, e.g.:
-// {type="link", display_url="xxx", ...}
+/// Serde will serialize these from JSON like, e.g.:
+/// {type="link", display_url="xxx", ...}
+/// https://www.tumblr.com/docs/npf#content-blocks
 #[derive(Debug, serde::Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 enum ContentBlock {
-    Link { display_url: String, title: String },
+    Link {
+        url: String,
+        display_url: Option<String>,
+        title: Option<String>,
+    },
+    Text {
+        text: String,
+    },
+    Image {},
+    Audio {},
+    Video {},
 }
 
 pub struct Auth {
@@ -249,7 +262,7 @@ impl Auth {
         // Sign request using only client/consumer credentials
         let auth_header =
             oauth1_request::Builder::<_, _>::new(client_credentials, oauth1_request::HmacSha1)
-                // Can optionally specify callback URL here, but Tumbler will use the application default
+                // Can optionally specify callback URL here, but Tumblr will use the application default
                 //.callback("https://callback_url")
                 .post(uri.clone(), &());
         trace!("Authorization: {}", auth_header);
@@ -319,7 +332,8 @@ impl Auth {
                 .verifier(verifier.as_ref())
                 .get(uri.clone(), &());
         trace!("Get access_token header: {}", auth_header);
-        let resp = self.client
+        let resp = self
+            .client
             .get(uri)
             .header(reqwest::header::AUTHORIZATION, auth_header)
             .send()
@@ -378,16 +392,20 @@ mod tests {
         let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("tests")
             .join("tumblr_posts.json.zst");
-        
+
         let file = std::fs::File::open(path)?;
         let bytes = zstd::decode_all(file)?;
         let posts: Posts = serde_json::from_slice(&bytes)?;
         let post = {
             let mut post: post::Post = Default::default();
-            post.front_matter.canonical_url = Some("https://rendered-obsolete.github.io/2021/05/03/dotnet_calli.html".to_owned());
+            post.front_matter.canonical_url =
+                Some("https://rendered-obsolete.github.io/2021/05/03/dotnet_calli.html".to_owned());
             post
         };
-        assert_eq!(Tumblr::find_existing(&post, &posts).unwrap(), "655788057293963264");
+        assert_eq!(
+            Tumblr::find_existing(&post, &posts).unwrap(),
+            "655788057293963264"
+        );
         Ok(())
     }
 }

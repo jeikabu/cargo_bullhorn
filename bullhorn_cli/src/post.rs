@@ -4,22 +4,25 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct FrontMatter {
     pub title: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub layout: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tags: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub permalink: Option<String>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub canonical_url: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub series: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub date: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub layout: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub permalink: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub published: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub series: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub slug: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tags: Option<Vec<String>>,
 }
 
 #[derive(Clone, Debug, Default)]
